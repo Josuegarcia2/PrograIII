@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Crear cuenta | TurisSV
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body class="auth-page">
+
+
+<div class="auth-container">
+
+
+    <!-- IMAGEN -->
+
+    <div class="auth-image registro-image">
+
+
+        <div class="auth-image-content">
+
+
+            <div class="auth-logo">
+                🦜 Turis<span>SV</span>
+            </div>
+
+
+            <h1>
+                Crea tu cuenta
+            </h1>
+
+
+            <p>
+                Únete a TurisSV y comienza a descubrir
+                los mejores lugares de El Salvador.
+            </p>
+
+
+            <div class="auth-benefits">
+
+                <div>
+                    ✓ Descubre destinos
+                </div>
+
+                <div>
+                    ✓ Guarda tus favoritos
+                </div>
+
+                <div>
+                    ✓ Reserva experiencias
+                </div>
+
+                <div>
+                    ✓ Recibe recomendaciones
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- FORMULARIO -->
+
+    <div class="auth-form">
+
+
+        <div class="form-logo">
+
+            🦜 Turis<span>SV</span>
+
+        </div>
+
+
+        <h2>
+            Crear cuenta
+        </h2>
+
+
+        <p class="form-subtitle">
+
+            Completa tus datos para comenzar.
+
+        </p>
+
+
+
+        <!-- MENSAJES -->
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+
+            {% if mensajes %}
+
+                {% for categoria, mensaje in mensajes %}
+
+                    <div class="alert {{ categoria }}">
+
+                        {{ mensaje }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <form method="POST">
+
+
+            <div class="input-group">
+
+                <label>
+                    Nombre completo
+                </label>
+
+
+                <div class="input-wrapper">
+
+                    <span>
+                        👤
+                    </span>
+
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Tu nombre completo"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="input-group">
+
+                <label>
+                    Correo electrónico
+                </label>
+
+
+                <div class="input-wrapper">
+
+                    <span>
+                        ✉️
+                    </span>
+
+                    <input
+                        type="email"
+                        name="correo"
+                        placeholder="tucorreo@gmail.com"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="input-group">
+
+                <label>
+                    Teléfono
+                </label>
+
+
+                <div class="input-wrapper">
+
+                    <span>
+                        📞
+                    </span>
+
+                    <input
+                        type="text"
+                        name="telefono"
+                        placeholder="7000-0000"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="input-group">
+
+                <label>
+                    Contraseña
+                </label>
+
+
+                <div class="input-wrapper">
+
+                    <span>
+                        🔒
+                    </span>
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Crea una contraseña"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="input-group">
+
+                <label>
+                    Confirmar contraseña
+                </label>
+
+
+                <div class="input-wrapper">
+
+                    <span>
+                        🔒
+                    </span>
+
+                    <input
+                        type="password"
+                        name="confirmar"
+                        placeholder="Confirma tu contraseña"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <button
+                type="submit"
+                class="auth-button"
+            >
+
+                Crear mi cuenta
+                →
+
+            </button>
+
+
+        </form>
+
+
+
+        <p class="switch-account">
+
+            ¿Ya tienes una cuenta?
+
+
+            <a href="{{ url_for('login') }}">
+                Iniciar sesión
+            </a>
+
+        </p>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

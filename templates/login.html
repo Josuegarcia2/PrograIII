@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Iniciar sesión | TurisSV
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body class="auth-page">
+
+
+<div class="auth-container login-container">
+
+
+    <!-- FORMULARIO -->
+
+    <div class="auth-form login-form">
+
+
+        <div class="form-logo">
+
+            🦜 Turis<span>SV</span>
+
+        </div>
+
+
+        <h2>
+            Iniciar sesión
+        </h2>
+
+
+        <p class="form-subtitle">
+
+            Bienvenido nuevamente a TurisSV.
+
+        </p>
+
+
+
+        <!-- MENSAJES -->
+
+        {% with mensajes = get_flashed_messages(with_categories=true) %}
+
+            {% if mensajes %}
+
+                {% for categoria, mensaje in mensajes %}
+
+                    <div class="alert {{ categoria }}">
+
+                        {{ mensaje }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+
+        <form method="POST">
+
+
+            <div class="input-group">
+
+                <label>
+                    Correo electrónico
+                </label>
+
+
+                <div class="input-wrapper">
+
+                    <span>
+                        ✉️
+                    </span>
+
+
+                    <input
+                        type="email"
+                        name="correo"
+                        placeholder="tucorreo@gmail.com"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="input-group">
+
+                <label>
+                    Contraseña
+                </label>
+
+
+                <div class="input-wrapper">
+
+                    <span>
+                        🔒
+                    </span>
+
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Tu contraseña"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <div class="forgot-password">
+
+                <a href="#">
+                    ¿Olvidaste tu contraseña?
+                </a>
+
+            </div>
+
+
+
+            <button
+                type="submit"
+                class="auth-button"
+            >
+
+                Iniciar sesión
+                →
+
+            </button>
+
+
+        </form>
+
+
+
+        <div class="login-security">
+
+            🔒
+
+            <div>
+
+                <strong>
+                    Tu información está segura
+                </strong>
+
+                <p>
+                    Protegemos tus datos y tus
+                    experiencias en TurisSV.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <p class="switch-account">
+
+            ¿No tienes una cuenta?
+
+
+            <a href="{{ url_for('registro') }}">
+                Crear cuenta
+            </a>
+
+        </p>
+
+
+    </div>
+
+
+
+    <!-- IMAGEN -->
+
+    <div class="auth-image login-image">
+
+
+        <div class="auth-image-content">
+
+
+            <div class="auth-logo">
+                🦜 Turis<span>SV</span>
+            </div>
+
+
+            <h1>
+                Bienvenido de nuevo
+            </h1>
+
+
+            <p>
+                Continúa descubriendo los lugares
+                más increíbles de El Salvador.
+            </p>
+
+
+            <div class="login-quote">
+
+                “Tu próxima aventura
+                comienza aquí.”
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

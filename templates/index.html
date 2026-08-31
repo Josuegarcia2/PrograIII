@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        TurisSV | Descubre El Salvador
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =================================================
+     BARRA DE NAVEGACIÓN
+================================================= -->
+
+<header class="navbar">
+
+
+    <div class="logo">
+
+        <span class="logo-icon">🦜</span>
+
+        Turis<span>SV</span>
+
+    </div>
+
+
+    <nav class="nav-links">
+
+        <a href="/">
+            Inicio
+        </a>
+
+        <a href="#">
+            Destinos
+        </a>
+
+        <a href="#">
+            Actividades
+        </a>
+
+        <a href="#">
+            Tours
+        </a>
+
+        <a href="#">
+            Contacto
+        </a>
+
+
+        <a
+            href="{{ url_for('login') }}"
+            class="btn-login"
+        >
+            Iniciar sesión
+        </a>
+
+
+        <a
+            href="{{ url_for('registro') }}"
+            class="btn-register"
+        >
+            Registrarse
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =================================================
+     HERO
+================================================= -->
+
+<section class="hero">
+
+
+    <div class="hero-content">
+
+
+        <h1>
+            DESCUBRE EL SALVADOR
+        </h1>
+
+
+        <p>
+            Explora playas, volcanes, pueblos mágicos
+            y vive experiencias únicas en el corazón
+            de Centroamérica.
+        </p>
+
+
+        <form
+            class="search-box"
+            action="#"
+        >
+
+
+            <input
+                type="text"
+                placeholder="¿A dónde quieres ir?"
+            >
+
+
+            <button type="submit">
+                Buscar
+            </button>
+
+
+        </form>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     CATEGORÍAS
+================================================= -->
+
+<section class="categories">
+
+
+    <div class="category">
+        🌊
+        <span>Playas</span>
+    </div>
+
+
+    <div class="category">
+        🏔️
+        <span>Montañas</span>
+    </div>
+
+
+    <div class="category">
+        🌋
+        <span>Volcanes</span>
+    </div>
+
+
+    <div class="category">
+        🌳
+        <span>Naturaleza</span>
+    </div>
+
+
+    <div class="category">
+        🏛️
+        <span>Cultura</span>
+    </div>
+
+
+    <div class="category">
+        🏘️
+        <span>Pueblos</span>
+    </div>
+
+
+    <div class="category">
+        🥾
+        <span>Aventura</span>
+    </div>
+
+
+    <div class="category">
+        🍴
+        <span>Gastronomía</span>
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     DESTINOS POPULARES
+================================================= -->
+
+<section class="section">
+
+
+    <div class="section-header">
+
+
+        <h2>
+            Destinos populares
+        </h2>
+
+
+        <a href="#">
+            Ver todos →
+        </a>
+
+
+    </div>
+
+
+
+    <div class="destination-grid">
+
+
+        <!-- EL TUNCO -->
+
+        <div class="destination-card">
+
+
+            <img
+                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+                alt="Playa"
+            >
+
+
+            <div class="card-body">
+
+
+                <h3>
+                    El Tunco
+                </h3>
+
+
+                <p class="location">
+                    📍 La Libertad
+                </p>
+
+
+                <div class="tags">
+
+                    <span>
+                        Playa
+                    </span>
+
+                    <span>
+                        Surf
+                    </span>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span>
+                        ⭐ 4.8
+                    </span>
+
+                    <span>
+                        $10
+                    </span>
+
+
+                    <button>
+                        Ver más
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- VOLCÁN -->
+
+        <div class="destination-card">
+
+
+            <img
+                src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80"
+                alt="Volcán"
+            >
+
+
+            <div class="card-body">
+
+
+                <h3>
+                    Volcán de San Miguel
+                </h3>
+
+
+                <p class="location">
+                    📍 San Miguel
+                </p>
+
+
+                <div class="tags">
+
+                    <span>
+                        Naturaleza
+                    </span>
+
+                    <span>
+                        Aventura
+                    </span>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span>
+                        ⭐ 4.7
+                    </span>
+
+                    <span>
+                        Gratis
+                    </span>
+
+
+                    <button>
+                        Ver más
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- COATEPEQUE -->
+
+        <div class="destination-card">
+
+
+            <img
+                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80"
+                alt="Lago"
+            >
+
+
+            <div class="card-body">
+
+
+                <h3>
+                    Lago de Coatepeque
+                </h3>
+
+
+                <p class="location">
+                    📍 Santa Ana
+                </p>
+
+
+                <div class="tags">
+
+                    <span>
+                        Naturaleza
+                    </span>
+
+                    <span>
+                        Kayak
+                    </span>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span>
+                        ⭐ 4.9
+                    </span>
+
+                    <span>
+                        Gratis
+                    </span>
+
+
+                    <button>
+                        Ver más
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- SUCHITOTO -->
+
+        <div class="destination-card">
+
+
+            <img
+                src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=800&q=80"
+                alt="Pueblo"
+            >
+
+
+            <div class="card-body">
+
+
+                <h3>
+                    Suchitoto
+                </h3>
+
+
+                <p class="location">
+                    📍 Cuscatlán
+                </p>
+
+
+                <div class="tags">
+
+                    <span>
+                        Cultura
+                    </span>
+
+                    <span>
+                        Pueblo
+                    </span>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span>
+                        ⭐ 4.9
+                    </span>
+
+                    <span>
+                        Gratis
+                    </span>
+
+
+                    <button>
+                        Ver más
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     ACTIVIDADES
+================================================= -->
+
+<section class="section">
+
+
+    <div class="section-header">
+
+
+        <h2>
+            Actividades populares
+        </h2>
+
+
+        <a href="#">
+            Ver todas →
+        </a>
+
+
+    </div>
+
+
+    <div class="activity-grid">
+
+
+        <div class="activity-card">
+
+            <div class="activity-icon">
+                🏄
+            </div>
+
+            <h3>
+                Surf
+            </h3>
+
+            <p>
+                El Tunco
+            </p>
+
+        </div>
+
+
+        <div class="activity-card">
+
+            <div class="activity-icon">
+                🥾
+            </div>
+
+            <h3>
+                Senderismo
+            </h3>
+
+            <p>
+                Cerro Verde
+            </p>
+
+        </div>
+
+
+        <div class="activity-card">
+
+            <div class="activity-icon">
+                🛶
+            </div>
+
+            <h3>
+                Kayak
+            </h3>
+
+            <p>
+                Coatepeque
+            </p>
+
+        </div>
+
+
+        <div class="activity-card">
+
+            <div class="activity-icon">
+                ⛺
+            </div>
+
+            <h3>
+                Camping
+            </h3>
+
+            <p>
+                El Imposible
+            </p>
+
+        </div>
+
+
+        <div class="activity-card">
+
+            <div class="activity-icon">
+                🚴
+            </div>
+
+            <h3>
+                Ciclismo
+            </h3>
+
+            <p>
+                Ruta de las Flores
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     TOURS
+================================================= -->
+
+<section class="section">
+
+
+    <div class="section-header">
+
+
+        <h2>
+            Tours destacados
+        </h2>
+
+
+        <a href="#">
+            Ver todos →
+        </a>
+
+
+    </div>
+
+
+    <div class="tour-grid">
+
+
+        <div class="tour-card">
+
+
+            <img
+                src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80"
+                alt="Tour"
+            >
+
+
+            <div class="tour-body">
+
+                <h3>
+                    Tour Ruta de las Flores
+                </h3>
+
+
+                <p>
+                    🗓️ 1 día
+                </p>
+
+
+                <p>
+                    👥 2-10 personas
+                </p>
+
+
+                <div class="tour-bottom">
+
+                    <strong>
+                        $45
+                    </strong>
+
+
+                    <button>
+                        Reservar
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <div class="tour-card">
+
+
+            <img
+                src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80"
+                alt="Volcanes"
+            >
+
+
+            <div class="tour-body">
+
+                <h3>
+                    Ruta de los Volcanes
+                </h3>
+
+
+                <p>
+                    🗓️ 2 días
+                </p>
+
+
+                <p>
+                    👥 4-12 personas
+                </p>
+
+
+                <div class="tour-bottom">
+
+                    <strong>
+                        $89
+                    </strong>
+
+
+                    <button>
+                        Reservar
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     FOOTER
+================================================= -->
+
+<footer class="footer">
+
+
+    <div class="footer-column">
+
+
+        <div class="logo">
+            🦜 Turis<span>SV</span>
+        </div>
+
+
+        <p>
+            Tu plataforma inteligente para descubrir
+            El Salvador.
+        </p>
+
+        <p>
+            Explora, reserva y vive experiencias únicas.
+        </p>
+
+
+    </div>
+
+
+
+    <div class="footer-column">
+
+
+        <h3>
+            Enlaces rápidos
+        </h3>
+
+
+        <a href="/">
+            Inicio
+        </a>
+
+        <a href="#">
+            Destinos
+        </a>
+
+        <a href="#">
+            Actividades
+        </a>
+
+        <a href="#">
+            Tours
+        </a>
+
+
+    </div>
+
+
+
+    <div class="footer-column">
+
+
+        <h3>
+            Soporte
+        </h3>
+
+
+        <a href="#">
+            Contacto
+        </a>
+
+        <a href="#">
+            Ayuda
+        </a>
+
+        <a href="#">
+            Términos y condiciones
+        </a>
+
+        <a href="#">
+            Política de privacidad
+        </a>
+
+
+    </div>
+
+
+
+    <div class="footer-column">
+
+
+        <h3>
+            Contacto
+        </h3>
+
+
+        <p>
+            📞 8000-0000
+        </p>
+
+        <p>
+            ✉️ soporte@turissv.com
+        </p>
+
+        <p>
+            📍 Usulután, El Salvador
+        </p>
+
+
+    </div>
+
+
+</footer>
+
+
+</body>
+
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        TurisSV | Mi cuenta
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+    <!-- ==========================================
+         MENÚ LATERAL
+    =========================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="sidebar-logo">
+
+            🦜 Turis<span>SV</span>
+
+        </div>
+
+
+        <p class="menu-title">
+            MENÚ PRINCIPAL
+        </p>
+
+
+        <nav class="sidebar-menu">
+
+
+            <a
+                href="#"
+                class="active"
+            >
+
+                <span>🏠</span>
+
+                Inicio
+
+            </a>
+
+
+            <a href="#">
+
+                <span>📍</span>
+
+                Destinos
+
+            </a>
+
+
+            <a href="#">
+
+                <span>🥾</span>
+
+                Actividades
+
+            </a>
+
+
+            <a href="#">
+
+                <span>🚌</span>
+
+                Tours
+
+            </a>
+
+
+            <a href="#">
+
+                <span>🏨</span>
+
+                Alojamientos
+
+            </a>
+
+
+            <a href="#">
+
+                <span>❤️</span>
+
+                Favoritos
+
+            </a>
+
+
+            <a href="#">
+
+                <span>📅</span>
+
+                Mis reservas
+
+            </a>
+
+
+            <a href="#">
+
+                <span>💬</span>
+
+                Mensajes
+
+            </a>
+
+
+            <a href="#">
+
+                <span>🤖</span>
+
+                Recomendaciones
+
+            </a>
+
+
+        </nav>
+
+
+
+        <p class="menu-title menu-bottom-title">
+            CUENTA
+        </p>
+
+
+        <nav class="sidebar-menu">
+
+
+            <a href="#">
+
+                <span>👤</span>
+
+                Mi perfil
+
+            </a>
+
+
+            <a href="{{ url_for('logout') }}">
+
+                <span>🚪</span>
+
+                Cerrar sesión
+
+            </a>
+
+
+        </nav>
+
+
+    </aside>
+
+
+
+    <!-- ==========================================
+         CONTENIDO
+    =========================================== -->
+
+    <main class="dashboard-main">
+
+
+        <!-- HEADER -->
+
+        <header class="dashboard-header">
+
+
+            <div>
+
+                <p class="welcome-small">
+                    PANEL DE USUARIO
+                </p>
+
+
+                <h1>
+
+                    ¡Hola,
+                    {{ nombre }}
+                    👋
+
+                </h1>
+
+
+                <p>
+                    ¿Qué aventura quieres descubrir hoy?
+                </p>
+
+            </div>
+
+
+            <div class="dashboard-user">
+
+
+                <div class="notification">
+                    🔔
+                </div>
+
+
+                <div class="avatar">
+                    {{ nombre[0] }}
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ nombre }}
+                    </strong>
+
+                    <small>
+                        Usuario
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- BUSCADOR -->
+
+        <div class="dashboard-search">
+
+
+            <span>
+                🔎
+            </span>
+
+
+            <input
+                type="text"
+                placeholder="Busca destinos, actividades, tours..."
+            >
+
+
+            <button>
+                Buscar
+            </button>
+
+
+        </div>
+
+
+
+        <!-- ==========================================
+             TARJETAS
+        =========================================== -->
+
+        <section class="quick-section">
+
+
+            <div class="quick-grid">
+
+
+                <div class="quick-card">
+
+
+                    <div class="quick-icon blue">
+                        📍
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Explora
+                        </h3>
+
+                        <p>
+                            Descubre lugares increíbles
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="quick-card">
+
+
+                    <div class="quick-icon green">
+                        📅
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Reserva
+                        </h3>
+
+                        <p>
+                            Tours, hoteles y actividades
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="quick-card">
+
+
+                    <div class="quick-icon orange">
+                        ❤️
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Favoritos
+                        </h3>
+
+                        <p>
+                            Tus lugares guardados
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             RECOMENDACIONES
+        =========================================== -->
+
+        <section class="dashboard-section">
+
+
+            <div class="dashboard-section-header">
+
+
+                <div>
+
+                    <h2>
+                        Recomendaciones para ti
+                    </h2>
+
+                    <p>
+                        Lugares que podrían interesarte
+                    </p>
+
+                </div>
+
+
+                <a href="#">
+                    Ver todos →
+                </a>
+
+
+            </div>
+
+
+
+            <div class="recommendation-grid">
+
+
+                <div class="recommendation-card">
+
+
+                    <img
+                        src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=700&q=80"
+                        alt="Cerro Verde"
+                    >
+
+
+                    <div class="recommendation-body">
+
+
+                        <h3>
+                            Cerro Verde
+                        </h3>
+
+
+                        <p>
+                            📍 Santa Ana
+                        </p>
+
+
+                        <div class="recommendation-info">
+
+                            <span>
+                                ⭐ 4.8
+                            </span>
+
+                            <span>
+                                Naturaleza
+                            </span>
+
+                        </div>
+
+
+                        <button>
+                            Ver más
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="recommendation-card">
+
+
+                    <img
+                        src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=700&q=80"
+                        alt="Coatepeque"
+                    >
+
+
+                    <div class="recommendation-body">
+
+
+                        <h3>
+                            Lago de Coatepeque
+                        </h3>
+
+
+                        <p>
+                            📍 Santa Ana
+                        </p>
+
+
+                        <div class="recommendation-info">
+
+                            <span>
+                                ⭐ 4.9
+                            </span>
+
+                            <span>
+                                Kayak
+                            </span>
+
+                        </div>
+
+
+                        <button>
+                            Ver más
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="recommendation-card">
+
+
+                    <img
+                        src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=700&q=80"
+                        alt="Suchitoto"
+                    >
+
+
+                    <div class="recommendation-body">
+
+
+                        <h3>
+                            Suchitoto
+                        </h3>
+
+
+                        <p>
+                            📍 Cuscatlán
+                        </p>
+
+
+                        <div class="recommendation-info">
+
+                            <span>
+                                ⭐ 4.9
+                            </span>
+
+                            <span>
+                                Cultura
+                            </span>
+
+                        </div>
+
+
+                        <button>
+                            Ver más
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             PRÓXIMOS PASOS
+        =========================================== -->
+
+        <section class="next-section">
+
+
+            <div class="next-box">
+
+
+                <div class="next-icon">
+                    🤖
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Descubre recomendaciones personalizadas
+                    </h2>
+
+
+                    <p>
+                        Cuéntanos qué tipo de turismo te gusta
+                        y TurisSV encontrará experiencias para ti.
+                    </p>
+
+                </div>
+
+
+                <button>
+                    Comenzar
+                </button>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+</body>
+
+</html>
