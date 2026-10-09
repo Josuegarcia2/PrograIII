@@ -122,26 +122,30 @@
                     </div>
                 </div>
 
-                <!-- 4. CREAR PRODUCTO -->
+                <!-- 4. CREAR PRODUCTO (con subida de imagen) -->
                 <div id="admin-nuevo-producto" class="admin-view d-none">
                     <h4 class="fw-bold mb-3">Agregar nuevo producto</h4>
-                    <div class="row g-4">
-                        <div class="col-md-5">
-                            <div class="border rounded-4 p-5 text-center bg-white shadow-sm d-flex flex-column align-items-center justify-content-center" style="min-height: 220px;">
-                                <i class="fa-solid fa-upload fa-3x text-secondary mb-2"></i>
-                                <span class="small text-muted">Subir imagen</span>
+                    <form id="form-crear-producto" enctype="multipart/form-data">
+                        <div class="row g-4">
+                            <div class="col-md-5">
+                                <div class="border rounded-4 p-4 text-center bg-white shadow-sm d-flex flex-column align-items-center justify-content-center" style="min-height: 250px;">
+                                    <i class="fa-solid fa-cloud-arrow-up fa-3x text-secondary mb-2"></i>
+                                    <span class="small text-muted mb-2" id="lbl-file-name">Selecciona una imagen de tu dispositivo</span>
+                                    <input type="file" id="input-imagen" name="imagen" accept="image/*" class="form-control form-control-sm" required onchange="previewImagen(event)">
+                                    <img id="img-preview" class="img-fluid rounded-3 mt-2 d-none" style="max-height: 150px; object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="bg-white p-4 rounded-4 shadow-sm border">
+                                    <input type="text" name="nombre" class="form-control mb-2" placeholder="Nombre del producto" required>
+                                    <input type="number" step="0.01" name="precio" class="form-control mb-2" placeholder="Precio ($) Ej: 1.50" required>
+                                    <input type="number" name="stock" class="form-control mb-2" placeholder="Stock / Cantidad disponible" value="10">
+                                    <textarea name="descripcion" class="form-control mb-3" placeholder="Descripción del producto"></textarea>
+                                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold">Guardar producto</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="bg-white p-4 rounded-4 shadow-sm border">
-                                <input type="text" class="form-control mb-2" placeholder="Nombre del producto">
-                                <input type="text" class="form-control mb-2" placeholder="Precio / cantidad">
-                                <textarea class="form-control mb-2" placeholder="Descripción"></textarea>
-                                <textarea class="form-control mb-3" placeholder="Ingredientes"></textarea>
-                                <button class="btn btn-dark w-100 rounded-pill fw-bold">Guardar</button>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
 
                 <!-- 5. USUARIOS Y ROLES (DINÁMICO CON MYSQL) -->
@@ -234,6 +238,48 @@
             });
         }
 
+        // Preview de imagen al seleccionarla
+        function previewImagen(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('lbl-file-name').innerText = file.name;
+                const img = document.getElementById('img-preview');
+                img.src = URL.createObjectURL(file);
+                img.classList.remove('d-none');
+            }
+        }
+
+        // Envío del formulario de producto con FormData
+        const formProducto = document.getElementById('form-crear-producto');
+        if (formProducto) {
+            formProducto.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch('/api/productos', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ok) {
+                        alert('¡Producto registrado correctamente en MySQL!');
+                        this.reset();
+                        document.getElementById('img-preview').classList.add('d-none');
+                        document.getElementById('lbl-file-name').innerText = 'Selecciona una imagen de tu dispositivo';
+                        verSeccion('productos');
+                    } else {
+                        alert('Error: ' + data.mensaje);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al procesar la solicitud:', err);
+                    alert('Error al procesar la solicitud');
+                });
+            });
+        }
+
+        // Gráfico de ventas
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartVentas');
             if (ctx) {
@@ -254,6 +300,7 @@
             }
         });
 
+        // Logout
         document.getElementById('btn-logout-admin').addEventListener('click', function(e) {
             e.preventDefault();
             fetch('/api/logout', { method: 'POST' })

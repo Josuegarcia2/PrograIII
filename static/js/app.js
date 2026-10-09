@@ -102,22 +102,27 @@ document.addEventListener("DOMContentLoaded", () => {
     /* =============================================================
        6. FORMULARIO DE REGISTRO (AJAX)
        ============================================================= */
+    // EVENTO REGISTRO
     const formRegister = document.getElementById('form-register');
     if (formRegister) {
         formRegister.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Captura directa de valores
-            const nombreInput = formRegister.querySelector('input[placeholder*="Nombre"]');
-            const emailInput = formRegister.querySelector('input[type="email"]');
-            const telInput = formRegister.querySelector('input[type="tel"]');
+            const nombreInput = formRegister.querySelector('input[placeholder*="Nombre"]') || formRegister.querySelectorAll('input')[0];
+            const emailInput = formRegister.querySelector('input[type="email"]') || formRegister.querySelectorAll('input')[1];
+            const telInput = formRegister.querySelector('input[type="tel"]') || formRegister.querySelectorAll('input')[2];
             const passInputs = formRegister.querySelectorAll('input[type="password"]');
 
-            const nombre = nombreInput ? nombreInput.value : '';
-            const email = emailInput ? emailInput.value : '';
-            const telefono = telInput ? telInput.value : '';
+            const nombre = nombreInput ? nombreInput.value.trim() : '';
+            const email = emailInput ? emailInput.value.trim() : '';
+            const telefono = telInput ? telInput.value.trim() : '';
             const password = passInputs[0] ? passInputs[0].value : '';
             const confirmPassword = passInputs[1] ? passInputs[1].value : '';
+
+            if (!nombre || !email || !password) {
+                alert('Por favor completa todos los campos.');
+                return;
+            }
 
             if (password !== confirmPassword) {
                 alert('Las contraseñas no coinciden.');
@@ -127,20 +132,19 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch('/api/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, email, telefono, password })
+                body: JSON.stringify({ nombre, email, correo: email, telefono, password })
             })
             .then(res => res.json())
             .then(data => {
                 if (data.ok) {
-                    // Redirección inmediata a cliente.html
-                    window.location.href = data.redirect;
+                    window.location.assign(data.redirect);
                 } else {
                     alert('Error: ' + data.mensaje);
                 }
             })
             .catch(err => {
-                console.error('Error en fetch:', err);
-                alert('Ocurrió un error al procesar el registro.');
+                console.error('Error:', err);
+                alert('Error al comunicarse con el servidor');
             });
         });
     }
@@ -148,28 +152,40 @@ document.addEventListener("DOMContentLoaded", () => {
     /* =============================================================
        7. FORMULARIO DE LOGIN (AJAX)
        ============================================================= */
+    // EVENTO LOGIN
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
         formLogin.addEventListener('submit', function(e) {
             e.preventDefault();
-            const inputs = formLogin.querySelectorAll('input');
-            const email = inputs[0].value;
-            const password = inputs[1].value;
 
-            fetch(`${API_URL}/login`, {
+            const emailInput = formLogin.querySelector('input[type="email"]') || formLogin.querySelectorAll('input')[0];
+            const passInput = formLogin.querySelector('input[type="password"]') || formLogin.querySelectorAll('input')[1];
+
+            const email = emailInput ? emailInput.value.trim() : '';
+            const password = passInput ? passInput.value : '';
+
+            if (!email || !password) {
+                alert('Por favor ingresa tu correo y contraseña.');
+                return;
+            }
+
+            fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, correo: email, password })
             })
             .then(res => res.json())
             .then(data => {
                 if (data.ok) {
-                    window.location.href = data.redirect;
+                    window.location.assign(data.redirect);
                 } else {
                     alert('Error: ' + data.mensaje);
                 }
             })
-            .catch(err => alert('Error al iniciar sesión'));
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Error al iniciar sesión');
+            });
         });
     }
 });
