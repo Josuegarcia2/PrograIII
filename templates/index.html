@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastelitos de la Abuela</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome para Íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-cafe: #b3733b;
+            --color-cafe-oscuro: #8c582a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+
+        /* BARRA DE NAVEGACIÓN */
+        .navbar-brand img {
+            height: 52px;
+            width: auto;
+        }
+        .nav-link {
+            color: #333 !important;
+            font-weight: 500;
+            margin: 0 10px;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: var(--color-cafe) !important;
+        }
+        .btn-iniciar-sesion {
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 5px 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            background: transparent;
+        }
+        .btn-iniciar-sesion:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* HERO SECTION */
+        .hero-banner {
+            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0.2)), url('https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=1200') center/cover;
+            padding: 80px 0 100px 0;
+            position: relative;
+        }
+        .hero-title {
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-weight: bold;
+            font-size: 3.5rem;
+            color: #000;
+            line-height: 1.1;
+        }
+        .hero-subtitle {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            color: #000;
+        }
+        .hero-text {
+            max-width: 500px;
+            font-size: 1rem;
+            color: #222;
+            margin-top: 15px;
+        }
+
+        /* BENEFICIOS BAR */
+        .beneficios-bar {
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eaeaea;
+            padding: 12px 0;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* BOTÓN CATÁLOGO COMPLETO */
+        .btn-catalogo {
+            background-color: var(--color-cafe);
+            color: white;
+            font-weight: bold;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+        .btn-catalogo:hover {
+            background-color: var(--color-cafe-oscuro);
+            color: white;
+        }
+
+        /* TESTIMONIOS */
+        .testimonios-section {
+            background-color: var(--color-cafe);
+            color: white;
+            padding: 40px 0;
+            position: relative;
+        }
+        .card-testimonio {
+            background: white;
+            color: #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.8rem;
+            height: 100%;
+        }
+
+        /* PASOS DE COMPRA */
+        .badge-paso {
+            background-color: var(--color-cafe);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* CHAT FLOTANTE */
+        .chat-float-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: #0066ff;
+            color: white;
+            border-radius: 30px;
+            padding: 8px 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        /* FOOTER */
+        .footer-banner {
+            background-color: var(--color-cafe);
+            color: white;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        /* ====== Estilos para las pestañas de Login / Registro ====== */
+        #authTabs .nav-link {
+            color: #666;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+        #authTabs .nav-link.active {
+            background-color: #e9ecef !important;
+            color: #000 !important;
+            font-weight: bold;
+        }
+        .input-group-text {
+            border-color: #dee2e6;
+        }
+        .input-group .form-control {
+            border-color: #dee2e6;
+        }
+        .input-group .form-control:focus {
+            box-shadow: none;
+            border-color: #b3733b;
+        }
+
+        /* ====== Requisitos de contraseña ====== */
+        #requisitos-password span {
+            transition: color 0.2s ease;
+        }
+        #requisitos-password span.cumple {
+            color: #198754 !important;
+            font-weight: 600;
+        }
+        #requisitos-password span.no-cumple {
+            color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white py-2 shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="/static/img/logo_negro.png" alt="Pastelitos de la Abuela">
+                <div class="d-flex flex-column lh-1">
+                    <span class="fw-bold fs-4" style="font-family: 'Georgia', serif; font-style: italic; color: #000;">Pastelitos</span>
+                    <span class="fw-bold small" style="color: #000; letter-spacing: 0.5px;">de la abuela</span>
+                    <span style="font-size: 0.65rem; color: #666; font-weight: 500;">desde 2023</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#inicio">inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#productos">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#comprar">Comprar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            <!-- Botón en el Navbar que abre el Modal -->
+            <button class="btn-iniciar-sesion" data-bs-toggle="modal" data-bs-target="#authModal">
+                <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> iniciar sesión
+            </button>
+        </div>
+    </nav>
+
+    <!-- SECCIÓN INICIO (HERO) -->
+    <section id="inicio" class="hero-banner">
+        <div class="container">
+            <div class="col-md-7">
+                <h1 class="hero-title">Pastelitos<br>de la abuela</h1>
+                <p class="hero-subtitle">El sabor tradicional, hecho con amor</p>
+                <p class="hero-text">Disfruta de nuestros deliciosos pastelitos artesanales,, pizzas, calzone y budín hechos con ingredientes de la mejor calidad.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- BARRA DE BENEFICIOS -->
+    <div class="beneficios-bar">
+        <div class="container d-flex justify-content-around text-center">
+            <div><i class="fa-solid fa-circle-check text-info me-1"></i> Ingredientes de calidad</div>
+            <div><i class="fa-solid fa-utensils text-warning me-1"></i> Sabor casero</div>
+            <div><i class="fa-solid fa-shield-halved text-primary me-1"></i> Pedidos fáciles y seguros</div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN PRODUCTOS -->
+    <section id="productos" class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <span class="text-muted small">Nuestros productos</span>
+                    <h3 class="fw-bold mb-0" style="color: var(--color-cafe);">Hechos como en casa</h3>
+                    <p class="text-muted small mb-0">Descubre algunos de nuestros productos favoritos</p>
+                </div>
+                <a href="#productos" class="btn-catalogo">Ver catálogo completo <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <!-- TARJETAS DE PRODUCTOS -->
+            <div id="contenedor-productos" class="row g-4">
+                <div class="col-12 text-center py-4">
+                    <div class="spinner-border text-warning" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN NOSOTROS -->
+    <section id="nosotros" class="py-5 text-center bg-white border-top">
+        <div class="container">
+            <div class="mb-4">
+                <img src="/static/img/logo_negro.png" alt="Pastelitos de la Abuela" style="max-width: 250px; height: auto;">
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+                    <h4 class="fw-bold mb-3" style="line-height: 1.4;">La idea de Pastelitos de la Abuela nació en la casa de la abuela, junto a su hijo, quienes fueron los encargados de crear la receta. Todo comenzó con los famosos pastelitos de leche.</h4>
+                    <p class="text-muted fs-5">Con el tiempo, fueron preparando nuevas recetas como pizza, calzone y budín, haciendo crecer poco a poco esta idea que comenzó en familia.</p>
+                    <hr class="w-25 mx-auto my-4 border-2" style="background-color: #000; height: 3px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN HISTORIAS QUE NOS MOTIVAN (TESTIMONIOS) -->
+    <section class="testimonios-section">
+        <div class="container">
+            <p class="text-uppercase small mb-1 opacity-75">LO QUE DICEN NUESTROS CLIENTES</p>
+            <h3 class="fw-bold mb-4">Historias que nos motivan</h3>
+            
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card-testimonio">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-circle-user fa-2x me-2 text-secondary"></i>
+                            <span class="text-warning">★★★★★</span>
+                        </div>
+                        <p class="mb-2">"La atención es super excelente, el sabor es insuperable y las entregas a domicilio super rápidas."</p>
+                        <strong class="d-block text-end">— Flor Gómez</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-testimonio">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-circle-user fa-2x me-2 text-secondary"></i>
+                            <span class="text-warning">★★★★★</span>
+                        </div>
+                        <p class="mb-2">"Excelente servicio y la calidad del producto no se diga, súper recomendados."</p>
+                        <strong class="d-block text-end">— Alvaro Valle</strong>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-testimonio">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-circle-user fa-2x me-2 text-secondary"></i>
+                            <span class="text-warning">★★★★★</span>
+                        </div>
+                        <p class="mb-2">"Me encantó la atención, todo bien ordenado, de calidad y la comida llega bien calientita."</p>
+                        <strong class="d-block text-end">— Ximena Rivas</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN COMPRAR (PASOS) -->
+    <section id="comprar" class="py-5 bg-light">
+        <div class="container">
+            <span class="text-muted small text-uppercase fw-bold">COMPRA FÁCIL</span>
+            <h3 class="fw-bold mb-1" style="color: var(--color-cafe);">¿Cómo hacer tu pedido?</h3>
+            <p class="text-muted small mb-4">Es muy fácil y rápido, solo sigue estos 4 pasos:</p>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start mb-3">
+                        <span class="badge-paso">1</span>
+                        <p class="mb-0 small">Puedes elegir entre nuestro catálogo y seleccionar tus productos favoritos.</p>
+                    </div>
+                    <div class="d-flex align-items-start mb-3">
+                        <span class="badge-paso">2</span>
+                        <p class="mb-0 small">Agrega los productos a tu carrito y revisa tu pedido.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start mb-3">
+                        <span class="badge-paso">3</span>
+                        <p class="mb-0 small">Regístrate o inicia sesión para poder confirmar los datos de tu pedido.</p>
+                    </div>
+                    <div class="d-flex align-items-start mb-3">
+                        <span class="badge-paso">4</span>
+                        <p class="mb-0 small">Para que no tengas que salir, nosotros nos encargamos de preparar tu pedido.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN CONTACTO -->
+    <section id="contacto" class="py-5 bg-white">
+        <div class="container">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-5">
+                    <div class="border rounded p-4 text-center">
+                        <h6 class="text-muted mb-1">CONTÁCTANOS</h6>
+                        <h5 class="fw-bold mb-3">¿TIENES ALGUNA PREGUNTA?</h5>
+                        <p class="small text-muted mb-3"><i class="fa-solid fa-phone me-1"></i> 7000-0000</p>
+                        <p class="small text-muted mb-4"><i class="fa-solid fa-envelope me-1"></i> pastelitosdelaabuela@gmail.com</p>
+                        <a href="https://wa.me/" target="_blank" class="btn btn-success w-100 fw-bold rounded-pill">
+                            <i class="fa-brands fa-whatsapp me-2"></i> Contáctanos por WhatsApp
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <form id="form-contacto">
+                        <div class="mb-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="Nombre" required>
+                        </div>
+                        <div class="mb-2">
+                            <input type="email" class="form-control form-control-sm" placeholder="Correo electrónico" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control form-control-sm" rows="3" placeholder="Mensaje" required></textarea>
+                        </div>
+                        <button type="submit" class="btn w-100 fw-bold text-white" style="background-color: var(--color-cafe);">Enviar mensaje</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHATBOT FLOTANTE -->
+    <button class="chat-float-btn">
+        <i class="fa-solid fa-robot fs-5"></i>
+        <div class="text-start leading-tight">
+            <span class="d-block fw-bold small">¿Necesitas ayuda?</span>
+            <span class="d-block style-italic" style="font-size: 0.7rem;">Pregunta a nuestra IA</span>
+        </div>
+    </button>
+
+    <!-- FOOTER -->
+    <footer class="footer-banner">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <img src="/static/img/logo_blanco.png" alt="Pastelitos de la Abuela Blanco" style="height: 50px; width: auto;" class="me-3">
+                <a href="https://facebook.com" class="text-white text-decoration-none fw-bold fs-6" target="_blank">
+                    <i class="fa-brands fa-facebook fa-lg me-1"></i> Pastelitos de la abuela
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MODAL DE AUTENTICACIÓN (LOGIN Y REGISTRO) ==================== -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden p-3" style="max-width: 420px; margin: auto;">
+                
+                <!-- Botón de Cerrar (X) -->
+                <button type="button" class="btn-close ms-auto mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <!-- Pestañas de Navegación Superior -->
+                <ul class="nav nav-pills nav-justified mb-3 bg-light rounded-pill p-1" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill text-dark fw-semibold small" id="login-tab" data-bs-toggle="pill" data-bs-target="#tab-login" type="button" role="tab">iniciar sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill text-dark fw-semibold small" id="register-tab" data-bs-toggle="pill" data-bs-target="#tab-register" type="button" role="tab">Registrarse</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="authTabsContent">
+                    
+                    <!-- ==================== FORMULARIO 1: INICIAR SESIÓN ==================== -->
+                    <div class="tab-pane fade show active" id="tab-login" role="tabpanel">
+                        <div class="text-center mb-3">
+                            <img src="{{ url_for('static', filename='img/logo_negro.png') }}" alt="Logo" style="height: 60px; width: auto;" class="mb-2">
+                            <h4 class="fw-bold mb-0">iniciar sesión</h4>
+                            <p class="text-muted small">¡Bienvenido de nuevo!<br>inicia sesión para continuar con tu pedido</p>
+                        </div>
+
+                        <form id="form-login">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
+                                <input type="email" class="form-control border-start-0 ps-0" placeholder="Correo electrónico" required>
+                            </div>
+
+                            <!-- Campo Contraseña con Ojo -->
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="login-password" class="form-control border-start-0 border-end-0 ps-0" placeholder="Contraseña" required>
+                                <span class="input-group-text bg-white border-start-0 text-muted btn-toggle-password" data-target="login-password" style="cursor: pointer;">
+                                    <i class="fa-regular fa-eye"></i>
+                                </span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3 small">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label text-muted" for="rememberMe">Recordarme</label>
+                                </div>
+                                <a href="#" class="text-decoration-none text-warning fw-semibold">¿Olvidaste tu contraseña?</a>
+                            </div>
+
+                            <button type="submit" class="btn btn-dark w-100 rounded-3 py-2 fw-bold mb-3">
+                                <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> iniciar sesión
+                            </button>
+                        </form>
+
+                        <div class="text-center position-relative my-3">
+                            <hr class="text-muted">
+                            <span class="position-absolute top-50 start-50 translate-middle bg-white px-2 small text-muted">o</span>
+                        </div>
+
+                        <!-- Botón de Google con Logo Multicolor SVG -->
+                        <button class="btn btn-outline-secondary w-100 rounded-pill mb-2 small d-flex align-items-center justify-content-center gap-2 py-2">
+                            <svg width="18" height="18" viewBox="0 0 48 48">
+                                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                                <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                            </svg>
+                            Continuar con Google
+                        </button>
+
+                        <!-- Botón de Facebook -->
+                        <button class="btn btn-outline-secondary w-100 rounded-pill mb-3 small d-flex align-items-center justify-content-center gap-2 py-2">
+                            <i class="fa-brands fa-facebook text-primary fs-5"></i> Continuar con Facebook
+                        </button>
+
+                        <p class="text-center small text-muted mb-0">
+                            ¿No tienes una cuenta? <a href="#" class="text-warning fw-semibold text-decoration-none" id="goToRegister">Regístrate aquí</a>
+                        </p>
+                    </div>
+
+                    <!-- ==================== FORMULARIO 2: REGISTRARSE ==================== -->
+                    <div class="tab-pane fade" id="tab-register" role="tabpanel">
+                        <div class="text-center mb-3">
+                            <img src="{{ url_for('static', filename='img/logo_negro.png') }}" alt="Logo" style="height: 60px; width: auto;" class="mb-2">
+                            <h4 class="fw-bold mb-0">Registrarse</h4>
+                            <p class="text-muted small">Únete a nuestra familia<br>Regístrate y disfruta de todos nuestros beneficios</p>
+                        </div>
+
+                        <form id="form-register">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-user"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-0" placeholder="Nombre completo" required>
+                            </div>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-regular fa-envelope"></i></span>
+                                <input type="email" class="form-control border-start-0 ps-0" placeholder="Correo electrónico" required>
+                            </div>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-phone"></i></span>
+                                <input type="tel" class="form-control border-start-0 ps-0" placeholder="Teléfono (opcional)">
+                            </div>
+
+                            <!-- Campo Contraseña con Ojo -->
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="reg-password" class="form-control border-start-0 border-end-0 ps-0" placeholder="Contraseña" required>
+                                <span class="input-group-text bg-white border-start-0 text-muted btn-toggle-password" data-target="reg-password" style="cursor: pointer;">
+                                    <i class="fa-regular fa-eye"></i>
+                                </span>
+                            </div>
+
+                            <!-- Requisitos de contraseña interactivos -->
+                            <div class="mb-2 p-2 bg-light rounded small" id="requisitos-password" style="font-size: 0.75rem;">
+                                <p class="mb-1 text-muted fw-bold">La contraseña debe incluir:</p>
+                                <div class="d-flex flex-wrap gap-2 text-muted">
+                                    <span id="req-length">✖ Mínimo 8 caracteres</span>
+                                    <span id="req-uppercase">✖ Una mayúscula</span>
+                                    <span id="req-lowercase">✖ Una minúscula</span>
+                                    <span id="req-number">✖ Un número</span>
+                                    <span id="req-special">✖ Un símbolo (!@#$)</span>
+                                </div>
+                            </div>
+
+                            <!-- Campo Confirmar Contraseña con Ojo -->
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="reg-confirm-password" class="form-control border-start-0 border-end-0 ps-0" placeholder="Confirmar contraseña" required>
+                                <span class="input-group-text bg-white border-start-0 text-muted btn-toggle-password" data-target="reg-confirm-password" style="cursor: pointer;">
+                                    <i class="fa-regular fa-eye"></i>
+                                </span>
+                            </div>
+
+                            <div class="form-check mb-3 small">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label text-muted" for="terms">
+                                    Acepto los <a href="#" class="text-warning text-decoration-none">términos y condiciones</a> y la <a href="#" class="text-warning text-decoration-none">política de privacidad</a>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-dark w-100 rounded-3 py-2 fw-bold mb-3">
+                                <i class="fa-solid fa-user-plus me-2"></i> Registrarse
+                            </button>
+                        </form>
+
+                        <p class="text-center small text-muted mb-0">
+                            ¿Ya tienes una cuenta? <a href="#" class="text-warning fw-semibold text-decoration-none" id="goToLogin">Inicia sesión</a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS y app.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

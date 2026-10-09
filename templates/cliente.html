@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastelitos de la Abuela - Panel Cliente</title>
+    <!-- Bootstrap CSS & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-secundario: #d2a679;
+            --color-bg-sidebar: #fafafa;
+        }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #fcfcfc; }
+        
+        /* Sidebar lateral */
+        .sidebar-item {
+            color: #555;
+            font-weight: 500;
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            background-color: #f2e9e1;
+            color: #222;
+            font-weight: 600;
+        }
+
+        /* Banner Hero */
+        .banner-hero {
+            background: linear-gradient(100deg, #ffffff 50%, #f7ebd9 100%);
+            border-radius: 16px;
+            border: 1px solid #f0e4d7;
+        }
+
+        /* Botones de Categorías */
+        .btn-cat {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 6px 18px;
+            font-size: 0.88rem;
+            color: #444;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-cat.active, .btn-cat:hover {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        /* Tarjetas de producto */
+        .card-prod {
+            border: none;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .card-prod:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+        }
+
+        /* Botón Chatbot Flotante */
+        .chatbot-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: #1b73e8;
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(27,115,232,0.3);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Miniaturas detalle */
+        .thumb-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .thumb-img.active {
+            border-color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR HEADER -->
+    <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top py-2 px-3">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="navegarA('inicio')">
+                <img src="{{ url_for('static', filename='img/logo_negro.png') }}" alt="Logo" style="height: 48px;">
+            </a>
+            
+            <div class="dropdown ms-auto">
+                <button class="btn btn-outline-secondary rounded-pill dropdown-toggle px-3 btn-sm" type="button" data-bs-toggle="dropdown">
+                    <i class="fa-solid fa-circle-user me-1 fs-6"></i> {{ usuario_nombre }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li><a class="dropdown-item text-danger small" href="#" id="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- LAYOUT PRINCIPAL CON SIDEBAR -->
+    <div class="container-fluid my-4 px-4">
+        <div class="row g-4">
+            
+            <!-- SIDEBAR MENÚ DE NAVEGACIÓN -->
+            <div class="col-lg-2 col-md-3">
+                <div class="bg-white rounded-3 p-2 shadow-sm border">
+                    <a href="#" class="sidebar-item active" id="nav-inicio" onclick="navegarA('inicio')">
+                        <i class="fa-solid fa-house"></i> Inicio
+                    </a>
+                    <a href="#" class="sidebar-item" id="nav-catalogo" onclick="navegarA('catalogo')">
+                        <i class="fa-solid fa-utensils"></i> Productos
+                    </a>
+                    <a href="#" class="sidebar-item" id="nav-carrito" onclick="navegarA('carrito')">
+                        <i class="fa-solid fa-cart-shopping"></i> Mi carrito 
+                        <span class="badge bg-danger rounded-pill ms-auto" id="cart-badge">3</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ÁREA DINÁMICA DE VISTAS -->
+            <div class="col-lg-10 col-md-9">
+
+                <!-- 1. PANTALLA: INICIO -->
+                <div id="view-inicio" class="cliente-view">
+                    <!-- Banner Saludo -->
+                    <div class="banner-hero p-4 mb-4 d-flex align-items-center justify-content-between shadow-sm">
+                        <div>
+                            <h2 class="fw-bold mb-1">¡Bienvenido, {{ usuario_nombre }}!</h2>
+                            <p class="text-muted mb-3">¿Qué se te antoja hoy?</p>
+                            <div class="input-group" style="max-width: 380px;">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" class="form-control border-start-0" placeholder="Buscar producto...">
+                            </div>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=350" class="rounded-3 d-none d-lg-block" style="height: 130px; width: 220px; object-fit: cover;">
+                    </div>
+
+                    <h5 class="fw-bold mb-3">Nuestros productos</h5>
+                    <div class="row g-3" id="grid-destacados"></div>
+                </div>
+
+                <!-- 2. PANTALLA: TODOS LOS PRODUCTOS -->
+                <div id="view-catalogo" class="cliente-view d-none">
+                    <div class="d-flex gap-2 mb-3 overflow-auto pb-1">
+                        <a href="#" class="btn-cat active">Todos</a>
+                        <a href="#" class="btn-cat">Pastelitos</a>
+                        <a href="#" class="btn-cat">Calzone</a>
+                        <a href="#" class="btn-cat">Pizza</a>
+                        <a href="#" class="btn-cat">Postres</a>
+                    </div>
+                    <h5 class="fw-bold mb-3">Todos los productos</h5>
+                    <div class="row g-3" id="grid-catalogo"></div>
+                </div>
+
+                <!-- 3. PANTALLA: DETALLE DE PRODUCTO -->
+                <div id="view-detalle" class="cliente-view d-none">
+                    <div class="bg-white p-4 rounded-4 shadow-sm border">
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-5">
+                                <img id="det-img-main" src="" class="img-fluid rounded-3 mb-3 w-100" style="max-height: 280px; object-fit: cover;">
+                                <div class="d-flex gap-2">
+                                    <img src="https://images.unsplash.com/photo-1541529086526-db283c563270?q=80&w=150" class="thumb-img active" onclick="cambiarImagenDetalle(this.src)">
+                                    <img src="https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=150" class="thumb-img" onclick="cambiarImagenDetalle(this.src)">
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <h3 class="fw-bold" id="det-nombre">Pastelito de carne</h3>
+                                <h4 class="fw-bold text-dark mb-2" id="det-precio">2x $1.50</h4>
+                                <div class="text-warning mb-2 small">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+                                    <span class="text-muted ms-1">(4.0) 12 opiniones</span>
+                                </div>
+                                <p class="text-muted small mb-2">Relleno de carne suave con especias, horneado al punto para dar una textura crocante única.</p>
+                                
+                                <p class="mb-1 fw-bold small">Ingredientes:</p>
+                                <ul class="small text-muted mb-3 ps-3">
+                                    <li>Carne picada</li>
+                                    <li>Cebollita</li>
+                                    <li>Carne</li>
+                                    <li>Especies de la abuela</li>
+                                </ul>
+
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <span class="small fw-bold">Cantidad:</span>
+                                    <div class="input-group" style="width: 120px;">
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="modificarCantDetalle(-1)">-</button>
+                                        <input type="text" id="det-cant" class="form-control form-control-sm text-center" value="1" readonly>
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="modificarCantDetalle(1)">+</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-dark rounded-pill px-4" onclick="agregarDetalleAlCarrito()"><i class="fa-solid fa-cart-plus me-2"></i> Agregar al carrito</button>
+                                    <button class="btn btn-light border rounded-pill px-4" onclick="navegarA('catalogo')">Volver</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. PANTALLA: MI CARRITO -->
+                <div id="view-carrito" class="cliente-view d-none">
+                    <h4 class="fw-bold mb-3">Mi carrito <span class="text-muted fs-6">(3 productos)</span></h4>
+                    <div class="bg-white p-3 rounded-4 shadow-sm border mb-3">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>Producto</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-tbody">
+                                <!-- Generado dinámicamente -->
+                            </tbody>
+                        </table>
+                        
+                        <div class="row justify-content-end mt-4">
+                            <div class="col-md-4 text-end">
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Subtotal:</span><span id="cart-subtotal">$5.50</span>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted mb-2">
+                                    <span>Envío:</span><span>$1.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between fw-bold fs-5 border-top pt-2 mb-3">
+                                    <span>Total:</span><span id="cart-total">$6.50</span>
+                                </div>
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-light border rounded-pill px-3 btn-sm" onclick="navegarA('catalogo')">Seguir comprando</button>
+                                    <button class="btn btn-dark rounded-pill px-4 btn-sm" onclick="navegarA('confirmar')"><i class="fa-solid fa-cart-check me-2"></i> Finalizar pedido</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. PANTALLA: CONFIRMAR PEDIDO -->
+                <div id="view-confirmar" class="cliente-view d-none">
+                    <h4 class="fw-bold mb-3">Confirmar pedido</h4>
+                    <div class="row g-4">
+                        <div class="col-md-7">
+                            <div class="bg-white p-4 rounded-4 shadow-sm border">
+                                <h6 class="fw-bold mb-3">Datos de envío</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted mb-1">Nombre completo</label>
+                                    <input type="text" class="form-control form-control-sm" value="{{ usuario_nombre }}">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted mb-1">Dirección</label>
+                                    <input type="text" class="form-control form-control-sm" placeholder="Ej: Calle Principal #123">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted mb-1">Ciudad</label>
+                                    <input type="text" class="form-control form-control-sm" placeholder="San Salvador">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small text-muted mb-1">Teléfono</label>
+                                    <input type="text" class="form-control form-control-sm" placeholder="7000-0000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="bg-white p-4 rounded-4 shadow-sm border">
+                                <h6 class="fw-bold mb-3">Resumen del pedido</h6>
+                                <div id="resumen-items" class="mb-3">
+                                    <!-- Ítemes pequeños -->
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted mb-1">
+                                    <span>Subtotal:</span><span>$5.50</span>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted mb-2">
+                                    <span>Envío:</span><span>$1.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between fw-bold fs-5 border-top pt-2 mb-3">
+                                    <span>Total:</span><span>$6.50</span>
+                                </div>
+
+                                <h6 class="fw-bold mb-2">Método de pago</h6>
+                                <div class="form-check small mb-1">
+                                    <input class="form-check-input" type="radio" name="pago" id="pago1" checked>
+                                    <label class="form-check-label" for="pago1">Transferencia bancaria</label>
+                                </div>
+                                <div class="form-check small mb-4">
+                                    <input class="form-check-input" type="radio" name="pago" id="pago2">
+                                    <label class="form-check-label" for="pago2">Contra entrega</label>
+                                </div>
+
+                                <button class="btn btn-dark w-100 rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#modalConfirmado">
+                                    <i class="fa-solid fa-lock me-2"></i> Confirmar pedido
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- CHATBOT FLOTANTE IA -->
+    <button class="chatbot-btn shadow">
+        <i class="fa-solid fa-robot fs-4"></i>
+        <div class="text-start leading-tight">
+            <span class="d-block fw-bold" style="font-size: 0.85rem;">¿Necesitas ayuda?</span>
+            <span style="font-size: 0.72rem; opacity: 0.9;">Pregunta a nuestra IA</span>
+        </div>
+    </button>
+
+    <!-- 6. MODAL COMPRA CONFIRMADA -->
+    <div class="modal fade" id="modalConfirmado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 360px;">
+            <div class="modal-content border-0 rounded-4 p-4 text-center shadow-lg">
+                <div class="my-3">
+                    <i class="fa-solid fa-circle-check text-primary" style="font-size: 4.5rem;"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Compra confirmada</h4>
+                <p class="text-muted small mb-4">¡Gracias por tu pedido! Lo estamos preparando con mucho amor.</p>
+                <button class="btn btn-primary w-100 rounded-pill fw-bold py-2" data-bs-dismiss="modal" onclick="navegarA('inicio')">
+                    ¡Listo!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap y Lógica Cliente -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Datos simulados de productos
+        const productosMock = [
+            { id: 1, nombre: 'Pastelito de carne', precio: 1.50, desc: '2x $1.50', img: 'https://images.unsplash.com/photo-1541529086526-db283c563270?q=80&w=300' },
+            { id: 2, nombre: 'Pastelito de pollo', precio: 1.50, desc: '2x $1.50', img: 'https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=300' },
+            { id: 3, nombre: 'Calzone', precio: 2.50, desc: '1x $2.50', img: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?q=80&w=300' },
+            { id: 4, nombre: 'Pizza', precio: 8.00, desc: 'Familiar', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300' }
+        ];
+
+        // Carrito en memoria
+        let carrito = [
+            { id: 1, nombre: 'Pastelito de carne', precio: 1.50, cant: 2 },
+            { id: 2, nombre: 'Pastelito de pollo', precio: 1.50, cant: 1 },
+            { id: 3, nombre: 'Calzone', precio: 2.50, cant: 1 }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarGrids();
+            renderizarCarrito();
+        });
+
+        // Navegación entre las 6 pantallas
+        function navegarA(vistaId) {
+            document.querySelectorAll('.cliente-view').forEach(v => v.classList.add('d-none'));
+            document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+
+            const targetView = document.getElementById('view-' + vistaId);
+            const targetNav = document.getElementById('nav-' + vistaId);
+
+            if (targetView) targetView.classList.remove('d-none');
+            if (targetNav) targetNav.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Renderizar productos en pantalla
+        function renderizarGrids() {
+            const gridDest = document.getElementById('grid-destacados');
+            const gridCat = document.getElementById('grid-catalogo');
+
+            let html = '';
+            productosMock.forEach(p => {
+                html += `
+                    <div class="col-6 col-md-3">
+                        <div class="card-prod p-2 text-center" onclick="verDetalle(${p.id})">
+                            <img src="${p.img}" class="rounded-3 mb-2 w-100" style="height: 120px; object-fit: cover;">
+                            <h6 class="fw-bold mb-0 text-truncate">${p.nombre}</h6>
+                            <span class="small text-muted">${p.desc}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (gridDest) gridDest.innerHTML = html;
+            if (gridCat) gridCat.innerHTML = html + html; // Duplicado para catálogo completo
+        }
+
+        // Ver pantalla 3: Detalle de producto
+        function verDetalle(id) {
+            const prod = productosMock.find(p => p.id === id) || productosMock[0];
+            document.getElementById('det-nombre').innerText = prod.nombre;
+            document.getElementById('det-precio').innerText = prod.desc;
+            document.getElementById('det-img-main').src = prod.img;
+            document.getElementById('det-cant').value = 1;
+            navegarA('detalle');
+        }
+
+        function cambiarImagenDetalle(src) {
+            document.getElementById('det-img-main').src = src;
+        }
+
+        function modificarCantDetalle(delta) {
+            const input = document.getElementById('det-cant');
+            let val = parseInt(input.value) + delta;
+            if (val >= 1) input.value = val;
+        }
+
+        function agregarDetalleAlCarrito() {
+            alert('Producto agregado al carrito');
+            navegarA('carrito');
+        }
+
+        // Renderizar Pantalla 4: Carrito
+        function renderizarCarrito() {
+            const tbody = document.getElementById('cart-tbody');
+            const resumen = document.getElementById('resumen-items');
+            if (!tbody) return;
+
+            let html = '';
+            let resumenHtml = '';
+            let subtotal = 0;
+
+            carrito.forEach((item, idx) => {
+                const totalItem = item.precio * item.cant;
+                subtotal += totalItem;
+
+                html += `
+                    <tr>
+                        <td>
+                            <div class="fw-bold small">${item.nombre}</div>
+                        </td>
+                        <td class="small">$${item.precio.toFixed(2)}</td>
+                        <td>
+                            <div class="input-group input-group-sm" style="width: 90px;">
+                                <button class="btn btn-outline-secondary" onclick="cambiarCantCart(${idx}, -1)">-</button>
+                                <input type="text" class="form-control text-center px-1" value="${item.cant}" readonly>
+                                <button class="btn btn-outline-secondary" onclick="cambiarCantCart(${idx}, 1)">+</button>
+                            </div>
+                        </td>
+                        <td class="fw-bold small">$${totalItem.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-link text-danger p-0" onclick="eliminarDelCart(${idx})"><i class="fa-regular fa-trash-can"></i></button>
+                        </td>
+                    </tr>
+                `;
+
+                resumenHtml += `
+                    <div class="d-flex justify-content-between align-items-center mb-2 small">
+                        <span>${item.nombre} x${item.cant}</span>
+                        <span class="fw-bold">$${totalItem.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            if (resumen) resumen.innerHTML = resumenHtml;
+
+            const total = subtotal + 1.00; // $1.00 envío
+            document.getElementById('cart-subtotal').innerText = '$' + subtotal.toFixed(2);
+            document.getElementById('cart-total').innerText = '$' + total.toFixed(2);
+            document.getElementById('cart-badge').innerText = carrito.length;
+        }
+
+        function cambiarCantCart(index, delta) {
+            if (carrito[index]) {
+                carrito[index].cant += delta;
+                if (carrito[index].cant < 1) carrito[index].cant = 1;
+                renderizarCarrito();
+            }
+        }
+
+        function eliminarDelCart(index) {
+            carrito.splice(index, 1);
+            renderizarCarrito();
+        }
+
+        // Cerrar sesión
+        document.getElementById('btn-logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('/api/logout', { method: 'POST' })
+                .then(() => window.location.href = '/');
+        });
+    </script>
+</body>
+</html>
