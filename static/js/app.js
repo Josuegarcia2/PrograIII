@@ -1,3 +1,8 @@
+/* =============================================================
+   ARCHIVO: static/js/app.js
+   DESCRIPCIÓN: Lógica principal de la aplicación (Tienda, Admin, Auth)
+   ============================================================= */
+
 const API_URL = "http://127.0.0.1:5000/api";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -83,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
             actualizarRequisito('req-uppercase', hasUpper, "Una mayúscula");
             actualizarRequisito('req-lowercase', hasLower, "Una minúscula");
             actualizarRequisito('req-number', hasNum, "Un número");
-            actualizarRequisito('req-special', hasSpecial, "Un símbolo (!@#$)");
+            actualizarRequisito('req-special', hasSpecial, "Un símbolo (!@#$)"); // Corregido el texto
         });
     }
 
@@ -100,25 +105,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* =============================================================
-       6. FORMULARIO DE REGISTRO (AJAX)
+       6. FORMULARIO DE REGISTRO (AJAX) - CORREGIDO
        ============================================================= */
-    // EVENTO REGISTRO
     const formRegister = document.getElementById('form-register');
     if (formRegister) {
         formRegister.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const nombreInput = formRegister.querySelector('input[placeholder*="Nombre"]') || formRegister.querySelectorAll('input')[0];
-            const emailInput = formRegister.querySelector('input[type="email"]') || formRegister.querySelectorAll('input')[1];
-            const telInput = formRegister.querySelector('input[type="tel"]') || formRegister.querySelectorAll('input')[2];
+            // --- CORRECCIÓN AQUÍ: Búsqueda robusta de inputs ---
+            // Buscamos por tipo (email, tel) y por placeholder para el nombre.
+            // Para las contraseñas, usamos querySelectorAll('input[type="password"]').
+            
+            const nombreInput = formRegister.querySelector('input[placeholder*="Nombre"]') || formRegister.querySelector('input[type="text"]');
+            const emailInput = formRegister.querySelector('input[type="email"]');
+            const telInput = formRegister.querySelector('input[type="tel"]');
             const passInputs = formRegister.querySelectorAll('input[type="password"]');
 
             const nombre = nombreInput ? nombreInput.value.trim() : '';
             const email = emailInput ? emailInput.value.trim() : '';
             const telefono = telInput ? telInput.value.trim() : '';
-            const password = passInputs[0] ? passInputs[0].value : '';
-            const confirmPassword = passInputs[1] ? passInputs[1].value : '';
+            
+            // Validamos que existan los inputs de contraseña antes de acceder
+            const password = passInputs.length > 0 ? passInputs[0].value : '';
+            const confirmPassword = passInputs.length > 1 ? passInputs[1].value : '';
 
+            // Validación en JavaScript
             if (!nombre || !email || !password) {
                 alert('Por favor completa todos los campos.');
                 return;
@@ -129,37 +140,44 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // Petición al servidor
             fetch('/api/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, email, correo: email, telefono, password })
+                body: JSON.stringify({ 
+                    nombre: nombre, 
+                    email: email, 
+                    correo: email, // Enviamos ambos por si el backend espera uno u otro
+                    telefono: telefono, 
+                    password: password 
+                })
             })
             .then(res => res.json())
             .then(data => {
                 if (data.ok) {
                     window.location.assign(data.redirect);
                 } else {
-                    alert('Error: ' + data.mensaje);
+                    alert('Error: ' + (data.mensaje || 'Error desconocido'));
                 }
             })
             .catch(err => {
                 console.error('Error:', err);
-                alert('Error al comunicarse con el servidor');
+                alert('Ocurrió un error al enviar el formulario.');
             });
         });
     }
 
     /* =============================================================
-       7. FORMULARIO DE LOGIN (AJAX)
+       7. FORMULARIO DE LOGIN (AJAX) - CORREGIDO
        ============================================================= */
-    // EVENTO LOGIN
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
         formLogin.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const emailInput = formLogin.querySelector('input[type="email"]') || formLogin.querySelectorAll('input')[0];
-            const passInput = formLogin.querySelector('input[type="password"]') || formLogin.querySelectorAll('input')[1];
+            // --- CORRECCIÓN AQUÍ: Búsqueda robusta ---
+            const emailInput = formLogin.querySelector('input[type="email"]');
+            const passInput = formLogin.querySelector('input[type="password"]');
 
             const email = emailInput ? emailInput.value.trim() : '';
             const password = passInput ? passInput.value : '';
@@ -172,14 +190,18 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, correo: email, password })
+                body: JSON.stringify({ 
+                    email: email, 
+                    correo: email, 
+                    password: password 
+                })
             })
             .then(res => res.json())
             .then(data => {
                 if (data.ok) {
                     window.location.assign(data.redirect);
                 } else {
-                    alert('Error: ' + data.mensaje);
+                    alert('Error: ' + (data.mensaje || 'Credenciales incorrectas'));
                 }
             })
             .catch(err => {

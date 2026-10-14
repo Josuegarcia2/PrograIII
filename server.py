@@ -1,15 +1,17 @@
+import os
 from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from modulos.crud_productos import CRUDProductos
 from modulos.crud_usuarios import CRUDUsuarios
-import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static', static_url_path='/static')
 app.secret_key = 'clave_secreta_pastelitos_abuela'
 CORS(app)
 
-# Carpeta física para las imágenes subidas
+# -------------------------------------------------------------
+# CONFIGURACIÓN DE SUBIDA DE IMÁGENES
+# -------------------------------------------------------------
 UPLOAD_FOLDER = os.path.join(app.static_folder, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -44,7 +46,6 @@ def admin_page():
 # -------------------------------------------------------------
 # RUTAS API DE AUTENTICACIÓN
 # -------------------------------------------------------------
-# API REGISTRO
 @app.route('/api/registro', methods=['POST'])
 def api_registro():
     try:
@@ -54,7 +55,6 @@ def api_registro():
         telefono = datos.get('telefono', '')
         password = datos.get('password')
 
-        # Log para depuración en la consola
         print(f"📥 Datos de registro recibidos: nombre={nombre}, correo={correo}, pass={'***' if password else None}")
 
         if not nombre or not correo or not password:
@@ -77,7 +77,6 @@ def api_registro():
         print(f"❌ Error en /api/registro: {e}")
         return jsonify({"ok": False, "mensaje": str(e)}), 500
 
-# API LOGIN
 @app.route('/api/login', methods=['POST'])
 def api_login():
     try:
@@ -115,7 +114,6 @@ def api_logout():
 # -------------------------------------------------------------
 # RUTAS API DE USUARIOS (ADMIN)
 # -------------------------------------------------------------
-# API para obtener lista de usuarios (Solo Admin)
 @app.route('/api/usuarios', methods=['GET'])
 def api_listar_usuarios():
     if session.get('usuario_rol') != 1:
@@ -123,7 +121,6 @@ def api_listar_usuarios():
     usuarios = crud_user.obtener_todos_usuarios()
     return jsonify({"ok": True, "usuarios": usuarios}), 200
 
-# API para actualizar rol de usuario desde admin.html
 @app.route('/api/usuarios/cambiar_rol', methods=['POST'])
 def api_cambiar_rol():
     if session.get('usuario_rol') != 1:
@@ -188,9 +185,14 @@ def crear_producto():
     except Exception as e:
         return jsonify({"ok": False, "mensaje": str(e)}), 500
 
+# -------------------------------------------------------------
+# INICIO DEL SERVIDOR
+# -------------------------------------------------------------
 if __name__ == '__main__':
     print("--------------------------------------------------")
     print("🚀 Servidor iniciado con éxito")
     print("📍 Tienda: http://localhost:5000/")
+    print("📍 Admin:  http://localhost:5000/admin.html")
+    print("📂 Uploads: " + UPLOAD_FOLDER)
     print("--------------------------------------------------")
     app.run(debug=True, port=5000)

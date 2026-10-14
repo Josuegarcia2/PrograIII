@@ -114,11 +114,8 @@
                         <h4 class="fw-bold m-0">Todos los productos</h4>
                         <button class="btn btn-dark btn-sm rounded-pill px-3" onclick="verSeccion('nuevo-producto')"><i class="fa-solid fa-plus me-1"></i> Agregar producto</button>
                     </div>
-                    <div class="row g-3">
-                        <div class="col-md-3"><div class="card border-0 shadow-sm p-2 text-center bg-white rounded-3"><img src="https://images.unsplash.com/photo-1541529086526-db283c563270?q=80&w=200" class="rounded-3 mb-2" style="height: 110px; object-fit: cover;"><h6 class="fw-bold mb-0">Pastelito de carne</h6><span class="small text-muted">2x $1.50</span></div></div>
-                        <div class="col-md-3"><div class="card border-0 shadow-sm p-2 text-center bg-white rounded-3"><img src="https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=200" class="rounded-3 mb-2" style="height: 110px; object-fit: cover;"><h6 class="fw-bold mb-0">Pastelito de pollo</h6><span class="small text-muted">2x $1.50</span></div></div>
-                        <div class="col-md-3"><div class="card border-0 shadow-sm p-2 text-center bg-white rounded-3"><img src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?q=80&w=200" class="rounded-3 mb-2" style="height: 110px; object-fit: cover;"><h6 class="fw-bold mb-0">Calzone</h6><span class="small text-muted">$2.50</span></div></div>
-                        <div class="col-md-3"><div class="card border-0 shadow-sm p-2 text-center bg-white rounded-3"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=200" class="rounded-3 mb-2" style="height: 110px; object-fit: cover;"><h6 class="fw-bold mb-0">Pizza</h6><span class="small text-muted">$7.50</span></div></div>
+                    <div id="grid-productos-admin" class="row g-3">
+                        <!-- Carga dinámica vía AJAX -->
                     </div>
                 </div>
 
@@ -187,8 +184,44 @@
             if(id === 'usuarios') {
                 cargarUsuariosBD();
             }
+            if(id === 'productos') {
+                cargarProductosAdmin();
+            }
         }
 
+        /* =============================================================
+           CARGAR PRODUCTOS EN EL PANEL ADMIN
+           ============================================================= */
+        function cargarProductosAdmin() {
+            fetch('/api/productos')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ok && data.productos) {
+                        const contenedor = document.getElementById('grid-productos-admin');
+                        if (!contenedor) return;
+                        
+                        let html = '';
+                        data.productos.forEach(p => {
+                            const imgSrc = p.imagen ? `/static/${p.imagen}` : 'https://via.placeholder.com/200';
+                            html += `
+                                <div class="col-md-3">
+                                    <div class="card border-0 shadow-sm p-2 text-center bg-white rounded-3">
+                                        <img src="${imgSrc}" class="rounded-3 mb-2" style="height: 110px; object-fit: cover;">
+                                        <h6 class="fw-bold mb-0">${p.nombre}</h6>
+                                        <span class="small text-muted">$${parseFloat(p.precio).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        contenedor.innerHTML = html;
+                    }
+                })
+                .catch(err => console.error('Error al cargar productos:', err));
+        }
+
+        /* =============================================================
+           CARGAR USUARIOS
+           ============================================================= */
         function cargarUsuariosBD() {
             fetch('/api/usuarios')
                 .then(res => res.json())
@@ -238,7 +271,9 @@
             });
         }
 
-        // Preview de imagen al seleccionarla
+        /* =============================================================
+           PREVIEW DE IMAGEN
+           ============================================================= */
         function previewImagen(event) {
             const file = event.target.files[0];
             if (file) {
@@ -249,7 +284,9 @@
             }
         }
 
-        // Envío del formulario de producto con FormData
+        /* =============================================================
+           ENVÍO DEL FORMULARIO DE PRODUCTO CON FORMDATA
+           ============================================================= */
         const formProducto = document.getElementById('form-crear-producto');
         if (formProducto) {
             formProducto.addEventListener('submit', function(e) {
@@ -267,7 +304,8 @@
                         this.reset();
                         document.getElementById('img-preview').classList.add('d-none');
                         document.getElementById('lbl-file-name').innerText = 'Selecciona una imagen de tu dispositivo';
-                        verSeccion('productos');
+                        cargarProductosAdmin();  // Recargar la lista
+                        verSeccion('productos'); // Cambiar a la vista del catálogo
                     } else {
                         alert('Error: ' + data.mensaje);
                     }
@@ -279,7 +317,9 @@
             });
         }
 
-        // Gráfico de ventas
+        /* =============================================================
+           GRÁFICO DE VENTAS
+           ============================================================= */
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartVentas');
             if (ctx) {
@@ -298,9 +338,16 @@
                     }
                 });
             }
+
+            // Cargar productos al iniciar si el grid existe
+            if (document.getElementById('grid-productos-admin')) {
+                cargarProductosAdmin();
+            }
         });
 
-        // Logout
+        /* =============================================================
+           LOGOUT
+           ============================================================= */
         document.getElementById('btn-logout-admin').addEventListener('click', function(e) {
             e.preventDefault();
             fetch('/api/logout', { method: 'POST' })
