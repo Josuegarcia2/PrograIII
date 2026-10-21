@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Parcial II - usss046123</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f2f5; }
+        .contenedor { background: white; padding: 20px; border-radius: 8px; max-width: 900px; margin: auto; }
+        .oculto { display: none; }
+        input { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { padding: 8px 15px; background: #1a73e8; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #1a73e8; color: white; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        
+        <div id="vista-login" class="{% if vista != 'login' %}oculto{% endif %}">
+            <h2>Iniciar Sesión</h2>
+            <p id="msj-login" class="error"></p>
+            <input type="text" id="login-usuario" placeholder="Usuario">
+            <input type="password" id="login-clave" placeholder="Clave">
+            <button onclick="hacerLogin()">Entrar</button>
+        </div>
+
+        <div id="vista-sistema" class="{% if vista != 'sistema' %}oculto{% endif %}">
+            <h2>Gestión de Usuarios (usss046123)</h2>
+            <p>Bienvenido, <b>{{ session.get('usuario', '') }}</b> | <a href="/logout">Cerrar Sesión</a></p>
+            
+            <input type="hidden" id="edit-id">
+            <h3>Formulario de Registro/Edición</h3>
+            <input type="text" id="usuario" placeholder="Usuario">
+            <input type="text" id="clave" placeholder="Clave">
+            <input type="text" id="nombre" placeholder="Nombre completo">
+            <input type="text" id="direccion" placeholder="Dirección">
+            <input type="text" id="telefono" placeholder="Teléfono">
+            <button onclick="guardarUsuario()">Guardar</button>
+            <button onclick="limpiarFormulario()" id="btn-cancelar" class="oculto">Cancelar Edición</button>
+
+            <hr>
+            <h3>Buscar Usuarios</h3>
+            <input type="text" id="busqueda" placeholder="Buscar por nombre o usuario..." onkeyup="buscarUsuarios()">
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Usuario</th><th>Nombre</th><th>Dirección</th><th>Teléfono</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-usuarios"></tbody>
+            </table>
+        </div>
+    </div>
+
+    
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
