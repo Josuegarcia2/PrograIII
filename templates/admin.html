@@ -119,7 +119,7 @@
                     </div>
                 </div>
 
-                <!-- 4. CREAR PRODUCTO (con subida de imagen) -->
+                <!-- 4. CREAR PRODUCTO (con subida de imagen, categoría e ingredientes) -->
                 <div id="admin-nuevo-producto" class="admin-view d-none">
                     <h4 class="fw-bold mb-3">Agregar nuevo producto</h4>
                     <form id="form-crear-producto" enctype="multipart/form-data">
@@ -135,9 +135,24 @@
                             <div class="col-md-7">
                                 <div class="bg-white p-4 rounded-4 shadow-sm border">
                                     <input type="text" name="nombre" class="form-control mb-2" placeholder="Nombre del producto" required>
+                                    
+                                    <!-- Selección de Categoría -->
+                                    <select name="id_categoria" class="form-select mb-2" required>
+                                        <option value="" disabled selected>Selecciona una categoría</option>
+                                        <option value="1">Pastelitos</option>
+                                        <option value="2">Calzone</option>
+                                        <option value="3">Pizza</option>
+                                        <option value="4">Postres</option>
+                                    </select>
+
                                     <input type="number" step="0.01" name="precio" class="form-control mb-2" placeholder="Precio ($) Ej: 1.50" required>
                                     <input type="number" name="stock" class="form-control mb-2" placeholder="Stock / Cantidad disponible" value="10">
-                                    <textarea name="descripcion" class="form-control mb-3" placeholder="Descripción del producto"></textarea>
+                                    <textarea name="descripcion" class="form-control mb-2" placeholder="Descripción breve del producto"></textarea>
+                                    
+                                    <!-- ====== CAMPO DE INGREDIENTES AÑADIDO ====== -->
+                                    <textarea name="ingredientes" class="form-control mb-3" rows="3" placeholder="Ingredientes (ej: Queso, jamón, harina, salsa de la casa...)"></textarea>
+                                    <!-- ============================================ -->
+
                                     <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold">Guardar producto</button>
                                 </div>
                             </div>
@@ -200,14 +215,31 @@
                         const contenedor = document.getElementById('grid-productos-admin');
                         if (!contenedor) return;
                         
+                        if (data.productos.length === 0) {
+                            contenedor.innerHTML = '<div class="col-12 text-center text-muted py-4"><p>No hay productos registrados.</p></div>';
+                            return;
+                        }
+
                         let html = '';
                         data.productos.forEach(p => {
-                            const imgSrc = p.imagen ? `/static/${p.imagen}` : 'https://via.placeholder.com/200';
+                            let imgSrc = 'https://via.placeholder.com/200?text=Sin+Imagen';
+                            if (p.imagen) {
+                                imgSrc = p.imagen.startsWith('http') ? p.imagen : `/static/${p.imagen}`;
+                            }
+
                             html += `
                                 <div class="col-md-3">
-                                    <div class="card border-0 shadow-sm p-2 text-center bg-white rounded-3">
-                                        <img src="${imgSrc}" class="rounded-3 mb-2" style="height: 110px; object-fit: cover;">
-                                        <h6 class="fw-bold mb-0">${p.nombre}</h6>
+                                    <div class="card border-0 shadow-sm p-2 text-center bg-white rounded-3 position-relative">
+                                        <!-- Botón de eliminar -->
+                                        <button class="btn btn-danger btn-sm rounded-circle position-absolute" 
+                                                style="top: 8px; right: 8px; width: 30px; height: 30px; padding: 0; z-index: 10;" 
+                                                title="Eliminar producto"
+                                                onclick="eliminarProducto(${p.id_producto}, '${p.nombre.replace(/'/g, "\\'")}')">
+                                            <i class="fa-solid fa-trash" style="font-size: 0.75rem;"></i>
+                                        </button>
+                                        
+                                        <img src="${imgSrc}" class="rounded-3 mb-2" style="height: 110px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/200?text=Sin+Imagen'">
+                                        <h6 class="fw-bold mb-0 text-truncate">${p.nombre}</h6>
                                         <span class="small text-muted">$${parseFloat(p.precio).toFixed(2)}</span>
                                     </div>
                                 </div>
@@ -217,6 +249,32 @@
                     }
                 })
                 .catch(err => console.error('Error al cargar productos:', err));
+        }
+
+        /* =============================================================
+           ELIMINAR PRODUCTO
+           ============================================================= */
+        function eliminarProducto(id, nombre) {
+            if (!confirm(`¿Estás seguro que deseas eliminar el producto "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            fetch(`/api/productos/${id}`, {
+                method: 'DELETE'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    alert('✅ Producto eliminado correctamente.');
+                    cargarProductosAdmin();
+                } else {
+                    alert('❌ Error: ' + (data.mensaje || 'No se pudo eliminar el producto.'));
+                }
+            })
+            .catch(err => {
+                console.error('Error al eliminar producto:', err);
+                alert('❌ Error de conexión con el servidor.');
+            });
         }
 
         /* =============================================================
@@ -304,8 +362,8 @@
                         this.reset();
                         document.getElementById('img-preview').classList.add('d-none');
                         document.getElementById('lbl-file-name').innerText = 'Selecciona una imagen de tu dispositivo';
-                        cargarProductosAdmin();  // Recargar la lista
-                        verSeccion('productos'); // Cambiar a la vista del catálogo
+                        cargarProductosAdmin();
+                        verSeccion('productos');
                     } else {
                         alert('Error: ' + data.mensaje);
                     }
@@ -339,7 +397,6 @@
                 });
             }
 
-            // Cargar productos al iniciar si el grid existe
             if (document.getElementById('grid-productos-admin')) {
                 cargarProductosAdmin();
             }

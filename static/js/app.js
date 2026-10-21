@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
             actualizarRequisito('req-uppercase', hasUpper, "Una mayúscula");
             actualizarRequisito('req-lowercase', hasLower, "Una minúscula");
             actualizarRequisito('req-number', hasNum, "Un número");
-            actualizarRequisito('req-special', hasSpecial, "Un símbolo (!@#$)"); // Corregido el texto
+            actualizarRequisito('req-special', hasSpecial, "Un símbolo (!@#$)"); 
         });
     }
 
@@ -105,17 +105,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* =============================================================
-       6. FORMULARIO DE REGISTRO (AJAX) - CORREGIDO
+       6. FORMULARIO DE REGISTRO (AJAX)
        ============================================================= */
     const formRegister = document.getElementById('form-register');
     if (formRegister) {
         formRegister.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // --- CORRECCIÓN AQUÍ: Búsqueda robusta de inputs ---
-            // Buscamos por tipo (email, tel) y por placeholder para el nombre.
-            // Para las contraseñas, usamos querySelectorAll('input[type="password"]').
-            
             const nombreInput = formRegister.querySelector('input[placeholder*="Nombre"]') || formRegister.querySelector('input[type="text"]');
             const emailInput = formRegister.querySelector('input[type="email"]');
             const telInput = formRegister.querySelector('input[type="tel"]');
@@ -125,11 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = emailInput ? emailInput.value.trim() : '';
             const telefono = telInput ? telInput.value.trim() : '';
             
-            // Validamos que existan los inputs de contraseña antes de acceder
             const password = passInputs.length > 0 ? passInputs[0].value : '';
             const confirmPassword = passInputs.length > 1 ? passInputs[1].value : '';
 
-            // Validación en JavaScript
             if (!nombre || !email || !password) {
                 alert('Por favor completa todos los campos.');
                 return;
@@ -140,14 +134,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Petición al servidor
             fetch('/api/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     nombre: nombre, 
                     email: email, 
-                    correo: email, // Enviamos ambos por si el backend espera uno u otro
+                    correo: email, 
                     telefono: telefono, 
                     password: password 
                 })
@@ -175,12 +168,16 @@ document.addEventListener("DOMContentLoaded", () => {
         formLogin.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // --- CORRECCIÓN AQUÍ: Búsqueda robusta ---
-            const emailInput = formLogin.querySelector('input[type="email"]');
-            const passInput = formLogin.querySelector('input[type="password"]');
+            // Buscamos el input de contraseña por su ID (#login-password) en lugar de por type="password"
+            // Esto evita errores si el usuario hizo clic en el ojito para mostrar la contraseña.
+            const emailInput = formLogin.querySelector('input[type="email"]') || formLogin.querySelector('input[name="email"]');
+            const passInput = formLogin.querySelector('#login-password') || formLogin.querySelector('input[name="password"]');
 
             const email = emailInput ? emailInput.value.trim() : '';
             const password = passInput ? passInput.value : '';
+
+            console.log("Login - Email capturado:", email);
+            console.log("Login - Password capturado:", password ? "Sí" : "No");
 
             if (!email || !password) {
                 alert('Por favor ingresa tu correo y contraseña.');
@@ -210,6 +207,96 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+
+    /* =============================================================
+       8. CHAT IA - Abuelita IA (Paso 4)
+       ============================================================= */
+    const btnOpen = document.getElementById('btn-open-chat');
+    const btnClose = document.getElementById('btn-close-chat');
+    const modalChat = document.getElementById('modal-chat-ia');
+    const btnSend = document.getElementById('btn-send-chat');
+    const inputMsg = document.getElementById('input-chat-msg');
+    const boxMessages = document.getElementById('chat-messages');
+
+    if (btnOpen && modalChat) {
+        btnOpen.addEventListener('click', () => modalChat.classList.toggle('d-none'));
+    }
+    if (btnClose && modalChat) {
+        btnClose.addEventListener('click', () => modalChat.classList.add('d-none'));
+    }
+
+    // Escapa HTML y convierte **negritas** a <strong> para mostrar respuestas de la IA sin romper el DOM
+    function formatearRespuestaIA(texto) {
+        return (texto || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+    }
+
+    function enviarMensajeChat() {
+        if (!inputMsg || !boxMessages) return;
+
+        const texto = inputMsg.value.trim();
+        if (!texto) return;
+
+        // Burbuja del usuario
+        const userBubble = document.createElement('div');
+        userBubble.className = 'bg-primary text-white p-2 rounded-3 align-self-end';
+        userBubble.style.maxWidth = '85%';
+        userBubble.textContent = texto;
+        boxMessages.appendChild(userBubble);
+        inputMsg.value = '';
+        boxMessages.scrollTop = boxMessages.scrollHeight;
+
+        // Indicador "escribiendo..."
+        const idTemp = 'loading-' + Date.now();
+        const typing = document.createElement('div');
+        typing.id = idTemp;
+        typing.className = 'bg-light p-2 rounded-3 text-muted align-self-start border fst-italic';
+        typing.innerHTML = '<i class="fa-solid fa-ellipsis fa-fade"></i> Abuelita IA está escribiendo...';
+        boxMessages.appendChild(typing);
+        boxMessages.scrollTop = boxMessages.scrollHeight;
+
+        // Enviar al backend
+        fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mensaje: texto })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const tempElem = document.getElementById(idTemp);
+            if (tempElem) tempElem.remove();
+
+            const botBubble = document.createElement('div');
+            botBubble.className = 'bg-light p-2 rounded-3 text-dark align-self-start border';
+            botBubble.style.maxWidth = '85%';
+            botBubble.innerHTML = formatearRespuestaIA(data.respuesta || 'Ocurrió un error.');
+            boxMessages.appendChild(botBubble);
+            boxMessages.scrollTop = boxMessages.scrollHeight;
+        })
+        .catch(() => {
+            const tempElem = document.getElementById(idTemp);
+            if (tempElem) tempElem.remove();
+            const errBubble = document.createElement('div');
+            errBubble.className = 'bg-danger-subtle p-2 rounded-3 text-dark align-self-start border';
+            errBubble.textContent = 'Ups, error de conexión. Intenta de nuevo.';
+            boxMessages.appendChild(errBubble);
+            boxMessages.scrollTop = boxMessages.scrollHeight;
+        });
+    }
+
+    if (btnSend) btnSend.addEventListener('click', enviarMensajeChat);
+    if (inputMsg) {
+        inputMsg.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                enviarMensajeChat();
+            }
+        });
+    }
 });
 
 /* =============================================================
@@ -218,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarProductosTienda() {
     const contenedor = document.getElementById("contenedor-productos");
+    if (!contenedor) return;
 
     try {
         const respuesta = await fetch(`${API_URL}/productos`);
@@ -238,16 +326,28 @@ async function cargarProductosTienda() {
 function renderizarProductosTienda(productos, contenedor) {
     contenedor.innerHTML = "";
     productos.forEach(prod => {
+        let imgSrc = 'https://via.placeholder.com/250x200?text=Sin+Imagen';
+        
+        if (prod.imagen) {
+            if (prod.imagen.startsWith('http') || prod.imagen.startsWith('/static/')) {
+                imgSrc = prod.imagen;
+            } else {
+                imgSrc = `/static/${prod.imagen}`;
+            }
+        }
+
         contenedor.innerHTML += `
-            <div class="col-md-3">
-                <div class="card h-100 shadow-sm border-0">
-                    <img src="${prod.imagen_url || 'https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=400'}" class="card-img-top rounded-top" style="height: 180px; object-fit: cover;" alt="${prod.nombre}">
-                    <div class="card-body d-flex flex-column justify-content-between">
+            <div class="col-6 col-md-3">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div class="ratio ratio-4x3 rounded-top overflow-hidden">
+                        <img src="${imgSrc}" class="w-100 h-100 object-fit-cover" alt="${prod.nombre}" onerror="this.src='https://via.placeholder.com/250x200?text=Sin+Imagen'">
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-between p-3">
                         <div>
-                            <h6 class="fw-bold mb-1">${prod.nombre}</h6>
-                            <p class="small text-muted mb-2">${prod.descripcion || ''}</p>
+                            <h6 class="fw-bold mb-1 text-truncate">${prod.nombre}</h6>
+                            <p class="small text-muted mb-2 text-truncate">${prod.descripcion || ''}</p>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="d-flex justify-content-between align-items-center mt-2 border-top pt-2">
                             <span class="fw-bold text-cafe">$${parseFloat(prod.precio).toFixed(2)}</span>
                             <button class="btn btn-sm btn-outline-dark rounded-circle" onclick="agregarAlCarrito(${prod.id_producto})">
                                 <i class="fa-solid fa-cart-shopping"></i>
@@ -262,10 +362,10 @@ function renderizarProductosTienda(productos, contenedor) {
 
 function mostrarProductosDemo(contenedor) {
     const productosDemo = [
-        { id_producto: 1, nombre: "Pastelito de queso", descripcion: "Relleno de rico queso de la casa congelado listo para freír", precio: 0.50, imagen_url: "https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=400" },
-        { id_producto: 2, nombre: "Pastelito de pollo", descripcion: "Delicioso relleno de pollo sazonado con el secreto de la abuela", precio: 0.50, imagen_url: "https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=400" },
-        { id_producto: 3, nombre: "Calzone", descripcion: "Deliciosa masa rellena del queso, salsa y relleno de su elección", precio: 3.50, imagen_url: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?q=80&w=400" },
-        { id_producto: 4, nombre: "Pizza", descripcion: "Deliciosa pizza artesanal hecha con ingredientes frescos", precio: 7.00, imagen_url: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400" }
+        { id_producto: 1, nombre: "Pastelito de queso", descripcion: "Relleno de rico queso de la casa congelado listo para freír", precio: 0.50, imagen: "https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=400" },
+        { id_producto: 2, nombre: "Pastelito de pollo", descripcion: "Delicioso relleno de pollo sazonado con el secreto de la abuela", precio: 0.50, imagen: "https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=400" },
+        { id_producto: 3, nombre: "Calzone", descripcion: "Deliciosa masa rellena del queso, salsa y relleno de su elección", precio: 3.50, imagen: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?q=80&w=400" },
+        { id_producto: 4, nombre: "Pizza", descripcion: "Deliciosa pizza artesanal hecha con ingredientes frescos", precio: 7.00, imagen: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400" }
     ];
     renderizarProductosTienda(productosDemo, contenedor);
 }
@@ -289,9 +389,14 @@ async function cargarTablaAdmin() {
 
         if (datos.ok && datos.productos) {
             datos.productos.forEach(p => {
+                let imgSrc = '/static/img/placeholder.jpg';
+                if (p.imagen) {
+                    imgSrc = p.imagen.startsWith('http') ? p.imagen : `/static/${p.imagen}`;
+                }
+
                 tbody.innerHTML += `
                     <tr>
-                        <td><img src="${p.imagen_url}" width="50" height="50" style="object-fit:cover;" class="rounded"></td>
+                        <td><img src="${imgSrc}" width="50" height="50" style="object-fit:cover;" class="rounded" onerror="this.src='https://via.placeholder.com/50?text=Sin+Imagen'"></td>
                         <td><strong>${p.nombre}</strong></td>
                         <td>$${parseFloat(p.precio).toFixed(2)}</td>
                         <td>${p.stock}</td>
@@ -311,20 +416,23 @@ function configurarFormularioAdmin() {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         
-        const nuevoProd = {
-            nombre: document.getElementById("nombre").value,
-            descripcion: document.getElementById("descripcion").value,
-            precio: parseFloat(document.getElementById("precio").value),
-            stock: parseInt(document.getElementById("stock").value),
-            id_categoria: parseInt(document.getElementById("id_categoria").value),
-            imagen_url: document.getElementById("imagen_url").value
-        };
+        // Como el servidor usa request.form, usamos FormData para enviar imagen + datos.
+        const formData = new FormData();
+        formData.append('nombre', document.getElementById("nombre").value);
+        formData.append('descripcion', document.getElementById("descripcion").value);
+        formData.append('precio', document.getElementById("precio").value);
+        formData.append('stock', document.getElementById("stock").value);
+        formData.append('id_categoria', document.getElementById("id_categoria").value);
+        
+        const fileInput = document.getElementById("imagen");
+        if (fileInput && fileInput.files.length > 0) {
+            formData.append('imagen', fileInput.files[0]);
+        }
 
         try {
             const respuesta = await fetch(`${API_URL}/productos`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(nuevoProd)
+                body: formData
             });
 
             const resultado = await respuesta.json();
@@ -334,7 +442,7 @@ function configurarFormularioAdmin() {
                 form.reset();
                 cargarTablaAdmin();
             } else {
-                alert("Error al guardar el producto");
+                alert("Error al guardar el producto: " + (resultado.mensaje || 'Error desconocido'));
             }
         } catch (error) {
             console.error("Error al enviar el producto:", error);
