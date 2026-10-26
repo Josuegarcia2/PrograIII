@@ -19,7 +19,7 @@
 </head>
 <body>
 
-    <!-- NAVBAR TOP -->
+    
     <nav class="navbar navbar-expand-lg bg-white border-bottom py-2 px-4">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center gap-2" href="/admin.html">
@@ -39,7 +39,7 @@
 
     <div class="container-fluid my-4 px-4">
         <div class="row">
-            <!-- SIDEBAR DE NAVEGACIÓN -->
+            
             <div class="col-md-2 mb-4">
                 <div class="nav flex-column sidebar-admin bg-white p-2 rounded-3 border shadow-sm">
                     <a class="nav-link active" onclick="verSeccion('inicio', this)"><i class="fa-solid fa-chart-line me-2"></i> Inicio</a>
@@ -49,10 +49,10 @@
                 </div>
             </div>
 
-            <!-- VISTAS DINÁMICAS -->
+           
             <div class="col-md-10">
                 
-                <!-- 1. INICIO / DASHBOARD DE VENTAS -->
+               
                 <div id="admin-inicio" class="admin-view">
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
@@ -88,7 +88,7 @@
                     </div>
                 </div>
 
-                <!-- 2. GESTIÓN DE PEDIDOS -->
+                
                 <div id="admin-pedidos" class="admin-view d-none">
                     <h4 class="fw-bold mb-3">Gestión de pedidos</h4>
                     <div class="bg-white p-3 rounded-4 shadow-sm border">
@@ -108,7 +108,7 @@
                     </div>
                 </div>
 
-                <!-- 3. PRODUCTOS -->
+                
                 <div id="admin-productos" class="admin-view d-none">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="fw-bold m-0">Todos los productos</h4>
@@ -119,7 +119,7 @@
                     </div>
                 </div>
 
-                <!-- 4. CREAR PRODUCTO (con subida de imagen) -->
+                
                 <div id="admin-nuevo-producto" class="admin-view d-none">
                     <h4 class="fw-bold mb-3">Agregar nuevo producto</h4>
                     <form id="form-crear-producto" enctype="multipart/form-data">
@@ -145,7 +145,7 @@
                     </form>
                 </div>
 
-                <!-- 5. USUARIOS Y ROLES (DINÁMICO CON MYSQL) -->
+               
                 <div id="admin-usuarios" class="admin-view d-none">
                     <h4 class="fw-bold mb-3">Usuario y roles</h4>
                     <div class="bg-white p-3 rounded-4 shadow-sm border">
@@ -164,7 +164,7 @@
         </div>
     </div>
 
-    <!-- CHATBOT FLOTANTE -->
+  
     <button class="chatbot-btn shadow d-flex align-items-center gap-2">
         <i class="fa-solid fa-robot fs-5"></i>
         <div class="text-start leading-tight small"><span class="d-block fw-bold">¿Necesitas ayuda?</span><span style="font-size: 0.7rem;">Pregunta a nuestra IA</span></div>
@@ -189,9 +189,7 @@
             }
         }
 
-        /* =============================================================
-           CARGAR PRODUCTOS EN EL PANEL ADMIN
-           ============================================================= */
+        
         function cargarProductosAdmin() {
             fetch('/api/productos')
                 .then(res => res.json())
@@ -219,9 +217,7 @@
                 .catch(err => console.error('Error al cargar productos:', err));
         }
 
-        /* =============================================================
-           CARGAR USUARIOS
-           ============================================================= */
+       
         function cargarUsuariosBD() {
             fetch('/api/usuarios')
                 .then(res => res.json())
@@ -271,9 +267,7 @@
             });
         }
 
-        /* =============================================================
-           PREVIEW DE IMAGEN
-           ============================================================= */
+        
         function previewImagen(event) {
             const file = event.target.files[0];
             if (file) {
@@ -284,9 +278,7 @@
             }
         }
 
-        /* =============================================================
-           ENVÍO DEL FORMULARIO DE PRODUCTO CON FORMDATA
-           ============================================================= */
+       
         const formProducto = document.getElementById('form-crear-producto');
         if (formProducto) {
             formProducto.addEventListener('submit', function(e) {
@@ -317,9 +309,7 @@
             });
         }
 
-        /* =============================================================
-           GRÁFICO DE VENTAS
-           ============================================================= */
+      
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartVentas');
             if (ctx) {
@@ -339,15 +329,13 @@
                 });
             }
 
-            // Cargar productos al iniciar si el grid existe
+          
             if (document.getElementById('grid-productos-admin')) {
                 cargarProductosAdmin();
             }
         });
 
-        /* =============================================================
-           LOGOUT
-           ============================================================= */
+       
         document.getElementById('btn-logout-admin').addEventListener('click', function(e) {
             e.preventDefault();
             fetch('/api/logout', { method: 'POST' })

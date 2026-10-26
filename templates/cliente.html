@@ -14,7 +14,7 @@
         }
         body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #fcfcfc; }
         
-        /* Sidebar lateral */
+        
         .sidebar-item {
             color: #555;
             font-weight: 500;
@@ -33,14 +33,14 @@
             font-weight: 600;
         }
 
-        /* Banner Hero */
+        
         .banner-hero {
             background: linear-gradient(100deg, #ffffff 50%, #f7ebd9 100%);
             border-radius: 16px;
             border: 1px solid #f0e4d7;
         }
 
-        /* Botones de Categorías */
+        
         .btn-cat {
             background-color: #fff;
             border: 1px solid #e0e0e0;
@@ -57,7 +57,7 @@
             border-color: #000;
         }
 
-        /* Tarjetas de producto */
+      
         .card-prod {
             border: none;
             border-radius: 14px;
@@ -71,7 +71,6 @@
             box-shadow: 0 8px 16px rgba(0,0,0,0.08);
         }
 
-        /* Botón Chatbot Flotante */
         .chatbot-btn {
             position: fixed;
             bottom: 24px;
@@ -88,7 +87,7 @@
             gap: 12px;
         }
 
-        /* Miniaturas detalle */
+       
         .thumb-img {
             width: 60px;
             height: 60px;
@@ -104,7 +103,7 @@
 </head>
 <body>
 
-    <!-- NAVBAR HEADER -->
+   
     <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top py-2 px-3">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="navegarA('inicio')">
@@ -122,11 +121,11 @@
         </div>
     </nav>
 
-    <!-- LAYOUT PRINCIPAL CON SIDEBAR -->
+  
     <div class="container-fluid my-4 px-4">
         <div class="row g-4">
             
-            <!-- SIDEBAR MENÚ DE NAVEGACIÓN -->
+            
             <div class="col-lg-2 col-md-3">
                 <div class="bg-white rounded-3 p-2 shadow-sm border">
                     <a href="#" class="sidebar-item active" id="nav-inicio" onclick="navegarA('inicio')">
@@ -142,12 +141,12 @@
                 </div>
             </div>
 
-            <!-- ÁREA DINÁMICA DE VISTAS -->
+            
             <div class="col-lg-10 col-md-9">
 
-                <!-- 1. PANTALLA: INICIO -->
+                
                 <div id="view-inicio" class="cliente-view">
-                    <!-- Banner Saludo -->
+                    
                     <div class="banner-hero p-4 mb-4 d-flex align-items-center justify-content-between shadow-sm">
                         <div>
                             <h2 class="fw-bold mb-1">¡Bienvenido, {{ usuario_nombre }}!</h2>
@@ -164,7 +163,7 @@
                     <div class="row g-3" id="grid-destacados"></div>
                 </div>
 
-                <!-- 2. PANTALLA: TODOS LOS PRODUCTOS -->
+               
                 <div id="view-catalogo" class="cliente-view d-none">
                     <div class="d-flex gap-2 mb-3 overflow-auto pb-1">
                         <a href="#" class="btn-cat active">Todos</a>
@@ -177,7 +176,7 @@
                     <div class="row g-3" id="grid-catalogo"></div>
                 </div>
 
-                <!-- 3. PANTALLA: DETALLE DE PRODUCTO -->
+                
                 <div id="view-detalle" class="cliente-view d-none">
                     <div class="bg-white p-4 rounded-4 shadow-sm border">
                         <div class="row g-4 align-items-center">
@@ -223,7 +222,7 @@
                     </div>
                 </div>
 
-                <!-- 4. PANTALLA: MI CARRITO -->
+               
                 <div id="view-carrito" class="cliente-view d-none">
                     <h4 class="fw-bold mb-3">Mi carrito <span class="text-muted fs-6">(3 productos)</span></h4>
                     <div class="bg-white p-3 rounded-4 shadow-sm border mb-3">
@@ -238,7 +237,7 @@
                                 </tr>
                             </thead>
                             <tbody id="cart-tbody">
-                                <!-- Generado dinámicamente -->
+                                
                             </tbody>
                         </table>
                         
@@ -262,7 +261,7 @@
                     </div>
                 </div>
 
-                <!-- 5. PANTALLA: CONFIRMAR PEDIDO -->
+                
                 <div id="view-confirmar" class="cliente-view d-none">
                     <h4 class="fw-bold mb-3">Confirmar pedido</h4>
                     <div class="row g-4">
@@ -326,7 +325,7 @@
         </div>
     </div>
 
-    <!-- CHATBOT FLOTANTE IA -->
+    
     <button class="chatbot-btn shadow">
         <i class="fa-solid fa-robot fs-4"></i>
         <div class="text-start leading-tight">
@@ -335,7 +334,7 @@
         </div>
     </button>
 
-    <!-- 6. MODAL COMPRA CONFIRMADA -->
+    
     <div class="modal fade" id="modalConfirmado" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 360px;">
             <div class="modal-content border-0 rounded-4 p-4 text-center shadow-lg">
@@ -351,10 +350,10 @@
         </div>
     </div>
 
-    <!-- Scripts Bootstrap y Lógica Cliente -->
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Datos simulados de productos
+        
         const productosMock = [
             { id: 1, nombre: 'Pastelito de carne', precio: 1.50, desc: '2x $1.50', img: 'https://images.unsplash.com/photo-1541529086526-db283c563270?q=80&w=300' },
             { id: 2, nombre: 'Pastelito de pollo', precio: 1.50, desc: '2x $1.50', img: 'https://images.unsplash.com/photo-1621996346565-e3d5d6288365?q=80&w=300' },
@@ -374,7 +373,7 @@
             renderizarCarrito();
         });
 
-        // Navegación entre las 6 pantallas
+        
         function navegarA(vistaId) {
             document.querySelectorAll('.cliente-view').forEach(v => v.classList.add('d-none'));
             document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
@@ -388,7 +387,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Renderizar productos en pantalla
+        
         function renderizarGrids() {
             const gridDest = document.getElementById('grid-destacados');
             const gridCat = document.getElementById('grid-catalogo');
@@ -410,7 +409,7 @@
             if (gridCat) gridCat.innerHTML = html + html; // Duplicado para catálogo completo
         }
 
-        // Ver pantalla 3: Detalle de producto
+        
         function verDetalle(id) {
             const prod = productosMock.find(p => p.id === id) || productosMock[0];
             document.getElementById('det-nombre').innerText = prod.nombre;
@@ -435,7 +434,7 @@
             navegarA('carrito');
         }
 
-        // Renderizar Pantalla 4: Carrito
+        
         function renderizarCarrito() {
             const tbody = document.getElementById('cart-tbody');
             const resumen = document.getElementById('resumen-items');
@@ -499,7 +498,7 @@
             renderizarCarrito();
         }
 
-        // Cerrar sesión
+        
         document.getElementById('btn-logout').addEventListener('click', function(e) {
             e.preventDefault();
             fetch('/api/logout', { method: 'POST' })
