@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Pastelitos de la Abuela</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --color-cafe: #b3733b;
+            --color-cafe-oscuro: #8c582a;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8f9fa; 
+        }
+
+        /* Navbar moderna */
+        .navbar {
+            background-color: #ffffff !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+
+        /* Sidebar mejorada */
+        .sidebar-admin .nav-link { 
+            color: #555; 
+            font-weight: 600; 
+            font-size: 0.9rem;
+            margin-bottom: 6px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            padding: 10px 14px;
+        }
+        .sidebar-admin .nav-link i {
+            width: 20px;
+            color: #888;
+            transition: color 0.2s;
+        }
+        .sidebar-admin .nav-link.active, 
+        .sidebar-admin .nav-link:hover { 
+            color: var(--color-cafe); 
+            background-color: #fdf6f0; 
+        }
+        .sidebar-admin .nav-link.active i, 
+        .sidebar-admin .nav-link:hover i { 
+            color: var(--color-cafe); 
+        }
+
+        /* Tarjetas de estadísticas refinadas */
+        .stat-card { 
+            background: #fff; 
+            border-radius: 16px; 
+            border: 1px solid #eae2dc; 
+            padding: 20px; 
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(179, 115, 59, 0.08);
+        }
+        .stat-card h3 { font-weight: 700; margin: 0; color: #1a1a1a; }
+        .stat-card p { font-size: 0.82rem; color: #777; margin: 0 0 4px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Botón flotante de IA */
+        .chatbot-btn { 
+            position: fixed; bottom: 25px; right: 25px; 
+            background-color: var(--color-cafe); color: white; 
+            border-radius: 50px; padding: 12px 20px; border: none; 
+            z-index: 1000; box-shadow: 0 6px 20px rgba(179, 115, 59, 0.3);
+            transition: all 0.2s;
+        }
+        .chatbot-btn:hover { background-color: var(--color-cafe-oscuro); transform: translateY(-2px); }
+
+        /* Tarjetas y contenedores de vistas */
+        .card-container {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #eae2dc;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar superior -->
+    <nav class="navbar navbar-expand-lg py-2 px-4 sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/admin.html">
+                <img src="{{ url_for('static', filename='img/logo_negro.png') }}" alt="Logo" style="height: 42px;">
+                <span class="fw-bold fs-5 text-dark" style="font-family: 'Georgia', serif; font-style: italic;">Pastelitos <span class="fs-6 fw-normal text-muted">Admin</span></span>
+            </a>
+            <div class="dropdown ms-auto">
+                <button class="btn btn-light border rounded-pill btn-sm dropdown-toggle px-3 fw-semibold text-dark" type="button" data-bs-toggle="dropdown">
+                    <i class="fa-solid fa-user-shield me-1" style="color: var(--color-cafe);"></i> {{ usuario_nombre }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 py-2">
+                    <li><a class="dropdown-item text-danger small fw-semibold py-2" href="#" id="btn-logout-admin"><i class="fa-solid fa-right-from-bracket me-2"></i> Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container-fluid my-4 px-4">
+        <div class="row">
+            
+            <!-- Barra Lateral (Sidebar) -->
+            <div class="col-md-2 mb-4">
+                <div class="nav flex-column sidebar-admin bg-white p-3 rounded-4 border shadow-sm">
+                    <span class="text-uppercase text-muted fw-bold px-2 mb-2" style="font-size: 0.7rem; letter-spacing: 0.8px;">Menú principal</span>
+                    <a class="nav-link active" onclick="verSeccion('inicio', this)"><i class="fa-solid fa-chart-line me-2"></i> Inicio</a>
+                    <a class="nav-link" onclick="verSeccion('pedidos', this)"><i class="fa-solid fa-receipt me-2"></i> Pedidos</a>
+                    <a class="nav-link" onclick="verSeccion('productos', this)"><i class="fa-solid fa-utensils me-2"></i> Productos</a>
+                    <a class="nav-link" onclick="verSeccion('usuarios', this)"><i class="fa-solid fa-users me-2"></i> Usuarios</a>
+                </div>
+            </div>
+
+            <!-- Panel de Vistas Dinámicas -->
+            <div class="col-md-10">
+                
+                <!-- Vista: Inicio -->
+                <div id="admin-inicio" class="admin-view">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card shadow-sm d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p>Pedidos hoy</p>
+                                    <h3>6</h3>
+                                </div>
+                                <div class="fs-2 text-warning opacity-50"><i class="fa-solid fa-bag-shopping"></i></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card shadow-sm d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p>Nuevos clientes</p>
+                                    <h3>5</h3>
+                                </div>
+                                <div class="fs-2 text-primary opacity-50"><i class="fa-solid fa-user-plus"></i></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card shadow-sm d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p>Venta Total</p>
+                                    <h3>$30.00</h3>
+                                </div>
+                                <div class="fs-2 text-success opacity-50"><i class="fa-solid fa-wallet"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-container p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold m-0 text-dark">Ventas de la semana</h6>
+                                    <select class="form-select form-select-sm rounded-pill px-3" style="width: 140px;"><option>Esta semana</option></select>
+                                </div>
+                                <canvas id="chartVentas" style="max-height: 280px; width: 100%;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vista: Pedidos -->
+                <div id="admin-pedidos" class="admin-view d-none">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+                        <h4 class="fw-bold m-0 text-dark">Gestión de pedidos</h4>
+                        <!-- Filtros interactivos -->
+                        <div class="btn-group btn-group-sm" role="group" id="filtro-pedidos-grupo">
+                            <button type="button" class="btn btn-outline-secondary active" data-filtro="todos">Todos</button>
+                            <button type="button" class="btn btn-outline-secondary" data-filtro="pendientes">Pendientes</button>
+                            <button type="button" class="btn btn-outline-secondary" data-filtro="completados">Completados</button>
+                        </div>
+                    </div>
+
+                    <div class="card-container p-4">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-hover">
+                                <thead class="table-light">
+                                    <tr class="small text-uppercase text-muted">
+                                        <th>ID</th><th>Cliente</th><th>Estado</th><th>Producto</th><th>Fecha</th><th>Total</th><th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="fila-304">
+                                        <td class="fw-bold text-secondary">#304</td>
+                                        <td class="fw-semibold text-dark">Josue Garcia</td>
+                                        <td>
+                                            <select class="form-select form-select-sm border-0 bg-primary bg-opacity-10 text-primary fw-bold" style="width: 140px;" onchange="actualizarEstadoPedido(304, this.value)">
+                                                <option value="recibido">Recibido</option>
+                                                <option value="preparacion" selected>Preparación</option>
+                                                <option value="listo">Listo</option>
+                                                <option value="entregado">Entregado</option>
+                                            </select>
+                                        </td>
+                                        <td>Pastelitos de piña</td>
+                                        <td class="text-muted small">15/09/26 09:10 am</td>
+                                        <td class="fw-bold" style="color: var(--color-cafe);">$6.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-light text-primary me-1 border-0 shadow-sm" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Eliminar" onclick="eliminarPedido(304)"><i class="fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr id="fila-305">
+                                        <td class="fw-bold text-secondary">#305</td>
+                                        <td class="fw-semibold text-dark">Mario Ordoñez</td>
+                                        <td>
+                                            <select class="form-select form-select-sm border-0 bg-primary bg-opacity-10 text-primary fw-bold" style="width: 140px;" onchange="actualizarEstadoPedido(305, this.value)">
+                                                <option value="recibido">Recibido</option>
+                                                <option value="preparacion" selected>Preparación</option>
+                                                <option value="listo">Listo</option>
+                                                <option value="entregado">Entregado</option>
+                                            </select>
+                                        </td>
+                                        <td>Pizza</td>
+                                        <td class="text-muted small">15/09/26 09:14 am</td>
+                                        <td class="fw-bold" style="color: var(--color-cafe);">$10.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-light text-primary me-1 border-0 shadow-sm" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Eliminar" onclick="eliminarPedido(305)"><i class="fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr id="fila-306">
+                                        <td class="fw-bold text-secondary">#306</td>
+                                        <td class="fw-semibold text-dark">Felipe Paz</td>
+                                        <td>
+                                            <select class="form-select form-select-sm border-0 bg-warning bg-opacity-10 text-dark fw-bold" style="width: 140px;" onchange="actualizarEstadoPedido(306, this.value)">
+                                                <option value="recibido">Recibido</option>
+                                                <option value="preparacion">Preparación</option>
+                                                <option value="listo" selected>Listo</option>
+                                                <option value="entregado">Entregado</option>
+                                            </select>
+                                        </td>
+                                        <td>Calzone</td>
+                                        <td class="text-muted small">15/09/26 08:14 am</td>
+                                        <td class="fw-bold" style="color: var(--color-cafe);">$2.50</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-light text-primary me-1 border-0 shadow-sm" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Eliminar" onclick="eliminarPedido(306)"><i class="fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr id="fila-307">
+                                        <td class="fw-bold text-secondary">#307</td>
+                                        <td class="fw-semibold text-dark">Rosa Cruz</td>
+                                        <td>
+                                            <select class="form-select form-select-sm border-0 bg-secondary bg-opacity-10 text-secondary fw-bold" style="width: 140px;" onchange="actualizarEstadoPedido(307, this.value)">
+                                                <option value="recibido">Recibido</option>
+                                                <option value="preparacion">Preparación</option>
+                                                <option value="listo">Listo</option>
+                                                <option value="entregado" selected>Entregado</option>
+                                            </select>
+                                        </td>
+                                        <td>Budín</td>
+                                        <td class="text-muted small">15/09/26 08:01 am</td>
+                                        <td class="fw-bold" style="color: var(--color-cafe);">$6.00</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-light text-primary me-1 border-0 shadow-sm" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger border-0 shadow-sm" title="Eliminar" onclick="eliminarPedido(307)"><i class="fa-solid fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vista: Productos -->
+                <div id="admin-productos" class="admin-view d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold m-0 text-dark">Todos los productos</h4>
+                        <button class="btn btn-dark btn-sm rounded-pill px-4 py-2 fw-bold shadow-sm" onclick="verSeccion('nuevo-producto')"><i class="fa-solid fa-plus me-1"></i> Agregar producto</button>
+                    </div>
+                    <div id="grid-productos-admin" class="row g-4">
+                        <!-- Carga dinámica vía AJAX -->
+                    </div>
+                </div>
+
+                <!-- Vista: Nuevo Producto -->
+                <div id="admin-nuevo-producto" class="admin-view d-none">
+                    <h4 class="fw-bold mb-3 text-dark">Agregar nuevo producto</h4>
+                    <form id="form-crear-producto" enctype="multipart/form-data">
+                        <div class="row g-4">
+                            <div class="col-md-5">
+                                <div class="border rounded-4 p-4 text-center bg-white shadow-sm d-flex flex-column align-items-center justify-content-center" style="min-height: 280px; border-style: dashed !important; border-color: #cbd5e1 !important;">
+                                    <i class="fa-solid fa-cloud-arrow-up fa-3x text-muted mb-2"></i>
+                                    <span class="small text-muted mb-2 px-3" id="lbl-file-name">Selecciona una imagen de tu dispositivo</span>
+                                    <input type="file" id="input-imagen" name="imagen" accept="image/*" class="form-control form-control-sm mt-2" required onchange="previewImagen(event)">
+                                    <img id="img-preview" class="img-fluid rounded-3 mt-3 d-none shadow-sm" style="max-height: 160px; object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="card-container p-4">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-secondary">Nombre del producto</label>
+                                        <input type="text" name="nombre" class="form-control" placeholder="Ej. Pastelito de pollo" required>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label small fw-semibold text-secondary">Precio ($)</label>
+                                            <input type="number" step="0.01" name="precio" class="form-control" placeholder="0.50" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label small fw-semibold text-secondary">Stock disponible</label>
+                                            <input type="number" name="stock" class="form-control" placeholder="10" value="10">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold text-secondary">Descripción</label>
+                                        <textarea name="descripcion" class="form-control" rows="3" placeholder="Descripción breve..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2 shadow-sm" style="background-color: var(--color-cafe); border: none;">Guardar producto</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Vista: Usuarios -->
+                <div id="admin-usuarios" class="admin-view d-none">
+                    <h4 class="fw-bold mb-3 text-dark">Gestión de usuarios y roles</h4>
+                    <div class="card-container p-4">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-hover">
+                                <thead class="table-light">
+                                    <tr class="small text-uppercase text-muted"><th>ID</th><th>Cliente</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="tabla-usuarios-body">
+                                    <!-- Carga vía AJAX -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de Chatbot flotante -->
+    <button class="chatbot-btn shadow d-flex align-items-center gap-2">
+        <i class="fa-solid fa-robot fs-5"></i>
+        <div class="text-start leading-tight small"><span class="d-block fw-bold" style="font-size: 11px;">¿Necesitas ayuda?</span><span style="font-size: 9px; opacity: 0.9;">Asistente Abuelita</span></div>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function verSeccion(id, element) {
+            document.querySelectorAll('.admin-view').forEach(v => v.classList.add('d-none'));
+            if(element) {
+                document.querySelectorAll('.sidebar-admin .nav-link').forEach(l => l.classList.remove('active'));
+                element.classList.add('active');
+            }
+            const target = document.getElementById('admin-' + id);
+            if (target) target.classList.remove('d-none');
+
+            if(id === 'usuarios') cargarUsuariosBD();
+            if(id === 'productos') cargarProductosAdmin();
+        }
+
+        // Funciones para Editar y Eliminar Pedidos
+        function eliminarPedido(idPedido) {
+            if (confirm(`¿Estás seguro de que deseas eliminar el pedido #${idPedido}?`)) {
+                fetch(`/api/pedidos/${idPedido}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ok) {
+                        const fila = document.getElementById(`fila-${idPedido}`);
+                        if (fila) fila.remove();
+                        alert('Pedido eliminado correctamente.');
+                    } else {
+                        alert('Error al eliminar: ' + (data.mensaje || 'No se pudo procesar'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    // Si aún no tienes la ruta en el servidor Flask, simulamos el borrado visual para pruebas:
+                    const fila = document.getElementById(`fila-${idPedido}`);
+                    if (fila) fila.remove();
+                    alert('Pedido eliminado localmente.');
+                });
+            }
+        }
+
+        function actualizarEstadoPedido(idPedido, nuevoEstado) {
+            fetch(`/api/pedidos/${idPedido}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ estado: nuevoEstado })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.ok) {
+                    console.warn('Advertencia al actualizar estado en servidor:', data.mensaje);
+                }
+            })
+            .catch(err => {
+                console.log('Estado actualizado visualmente (modo local).');
+            });
+        }
+
+        function cargarProductosAdmin() {
+            fetch('/api/productos')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ok && data.productos) {
+                        const contenedor = document.getElementById('grid-productos-admin');
+                        if (!contenedor) return;
+                        
+                        let html = '';
+                        data.productos.forEach(p => {
+                            const imgSrc = p.imagen ? `/static/${p.imagen}` : 'https://via.placeholder.com/200';
+                            html += `
+                                <div class="col-md-3">
+                                    <div class="card border-0 shadow-sm p-3 text-center bg-white rounded-4 h-100">
+                                        <img src="${imgSrc}" class="rounded-3 mb-2 shadow-sm" style="height: 120px; object-fit: cover;">
+                                        <h6 class="fw-bold mb-1 text-dark">${p.nombre}</h6>
+                                        <span class="small fw-semibold" style="color: var(--color-cafe);">$${parseFloat(p.precio).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        contenedor.innerHTML = html;
+                    }
+                })
+                .catch(err => console.error('Error al cargar productos:', err));
+        }
+
+        function cargarUsuariosBD() {
+            fetch('/api/usuarios')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ok) {
+                        const tbody = document.getElementById('tabla-usuarios-body');
+                        let html = '';
+                        data.usuarios.forEach(u => {
+                            const rolTexto = u.id_rol === 1 ? 'Admin' : 'Cliente';
+                            const badgeColor = u.id_rol === 1 ? 'text-primary bg-primary' : 'text-success bg-success';
+                            
+                            html += `
+                                <tr>
+                                    <td>${u.id_usuario}</td>
+                                    <td class="fw-semibold text-dark">${u.nombre} ${u.apellido || ''}</td>
+                                    <td class="text-muted">${u.correo}</td>
+                                    <td>
+                                        <select class="form-select form-select-sm" style="width: 110px;" onchange="cambiarRol(${u.id_usuario}, this.value)">
+                                            <option value="1" ${u.id_rol === 1 ? 'selected' : ''}>Admin</option>
+                                            <option value="2" ${u.id_rol === 2 ? 'selected' : ''}>Cliente</option>
+                                        </select>
+                                    </td>
+                                    <td><span class="badge ${badgeColor} bg-opacity-10 px-2 py-1 fw-bold">${rolTexto}</span></td>
+                                    <td><i class="fa-solid fa-pen text-primary me-3 cursor-pointer" role="button"></i><i class="fa-solid fa-trash text-danger cursor-pointer" role="button"></i></td>
+                                </tr>
+                            `;
+                        });
+                        tbody.innerHTML = html;
+                    }
+                });
+        }
+
+        function cambiarRol(id_usuario, nuevo_rol) {
+            fetch('/api/usuarios/cambiar_rol', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_usuario, nuevo_rol: parseInt(nuevo_rol) })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.ok) {
+                    alert('Rol actualizado con éxito.');
+                    cargarUsuariosBD();
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            });
+        }
+
+        function previewImagen(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('lbl-file-name').innerText = file.name;
+                const img = document.getElementById('img-preview');
+                img.src = URL.createObjectURL(file);
+                img.classList.remove('d-none');
+            }
+        }
+
+        const formProducto = document.getElementById('form-crear-producto');
+        if (formProducto) {
+            formProducto.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch('/api/productos', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ok) {
+                        alert('¡Producto registrado correctamente en MySQL!');
+                        this.reset();
+                        document.getElementById('img-preview').classList.add('d-none');
+                        document.getElementById('lbl-file-name').innerText = 'Selecciona una imagen de tu dispositivo';
+                        cargarProductosAdmin();  
+                        verSeccion('productos'); 
+                    } else {
+                        alert('Error: ' + data.mensaje);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al procesar la solicitud:', err);
+                    alert('Error al procesar la solicitud');
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lógica para el filtro de pedidos
+            const botonesFiltro = document.querySelectorAll('#filtro-pedidos-grupo button');
+
+            botonesFiltro.forEach(boton => {
+                boton.addEventListener('click', function() {
+                    botonesFiltro.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const tipoFiltro = this.getAttribute('data-filtro');
+                    const filas = document.querySelectorAll('#admin-pedidos tbody tr');
+
+                    filas.forEach(fila => {
+                        const selectEstado = fila.querySelector('select');
+                        const estadoValor = selectEstado ? selectEstado.value.toLowerCase() : '';
+
+                        const esPendiente = ['recibido', 'preparacion', 'listo'].includes(estadoValor);
+                        const esCompletado = estadoValor === 'entregado';
+
+                        if (tipoFiltro === 'todos') {
+                            fila.style.display = '';
+                        } else if (tipoFiltro === 'pendientes' && esPendiente) {
+                            fila.style.display = '';
+                        } else if (tipoFiltro === 'completados' && esCompletado) {
+                            fila.style.display = '';
+                        } else {
+                            fila.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Gráfica de ventas
+            const ctx = document.getElementById('chartVentas');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+                        datasets: [{
+                            label: 'Ventas ($)',
+                            data: [15, 45, 30, 60, 85, 110, 95],
+                            borderColor: '#b3733b',
+                            backgroundColor: 'rgba(179, 115, 59, 0.08)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#b3733b',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { grid: { color: '#f1f1f1' }, ticks: { color: '#888' } },
+                            x: { grid: { display: false }, ticks: { color: '#888' } }
+                        }
+                    }
+                });
+            }
+
+            if (document.getElementById('grid-productos-admin')) {
+                cargarProductosAdmin();
+            }
+        });
+
+        document.getElementById('btn-logout-admin').addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('/api/logout', { method: 'POST' })
+                .then(() => window.location.href = '/');
+        });
+    </script>
+</body>
+</html>

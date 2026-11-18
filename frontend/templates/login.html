@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso - Pastelitos de la Abuela</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cafe-primario: #b3733b;
+            --cafe-oscuro: #8c582a;
+            --crema-fondo: #faf6f2;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top left, #f3e9df 0%, #faf6f2 50%, #efe4d8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 920px;
+            height: 620px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(140, 88, 42, 0.12);
+            overflow: hidden;
+            display: flex;
+        }
+
+        .auth-banner {
+            width: 45%;
+            position: relative;
+            background-image: url('/static/img/hero_pastelitos.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 36px;
+            color: #fff;
+        }
+
+        .auth-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(44, 26, 12, 0.45) 0%, rgba(44, 26, 12, 0.88) 100%);
+            z-index: 1;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-script {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            line-height: 1.05;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .auth-form-side {
+            width: 55%;
+            padding: 32px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #ffffff;
+        }
+
+        #authTabs {
+            background-color: #f4f1ee;
+            padding: 5px;
+            border-radius: 14px;
+        }
+
+        #authTabs .nav-link {
+            color: #7a6f67;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 8px 0;
+            transition: all 0.25s ease;
+        }
+
+        #authTabs .nav-link.active {
+            background-color: #ffffff !important;
+            color: #2c1a0c !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .tab-content, .tab-pane {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .custom-input-group {
+            border: 1.5px solid #e6e0da;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background-color: #fcfbfa;
+        }
+
+        .custom-input-group:focus-within {
+            border-color: var(--cafe-primario);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(179, 115, 59, 0.12);
+        }
+
+        .custom-input-group .input-group-text {
+            background: transparent;
+            border: none;
+            color: #9c8e83;
+            padding-left: 14px;
+        }
+
+        .custom-input-group .form-control {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            font-size: 0.92rem;
+            padding: 10px 12px 10px 4px;
+            color: #2c1a0c;
+        }
+
+        /* Oculta los iconos nativos de los navegadores */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+
+        .btn-cafe {
+            background-color: var(--cafe-primario);
+            border: none;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 11px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.2px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cafe:hover {
+            background-color: var(--cafe-oscuro);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(179, 115, 59, 0.28);
+        }
+
+        .link-marca {
+            color: var(--cafe-primario);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .link-marca:hover {
+            color: var(--cafe-oscuro);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .auth-wrapper {
+                flex-direction: column;
+                height: auto;
+                min-height: 600px;
+                max-width: 440px;
+            }
+            .auth-banner {
+                display: none;
+            }
+            .auth-form-side {
+                width: 100%;
+                padding: 28px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        
+        <!-- Banner Izquierdo -->
+        <div class="auth-banner">
+            <div class="banner-content d-flex align-items-center gap-2">
+                <img src="{{ url_for('static', filename='img/logo_blanco.png') }}" alt="Logo" style="height: 44px; width: auto;">
+                <span class="small fw-semibold text-uppercase tracking-wider opacity-75">Desde 2023</span>
+            </div>
+
+            <div class="banner-content">
+                <h2 class="brand-script mb-2">Pastelitos<br>de la abuela</h2>
+                <p class="small opacity-90 mb-3" style="line-height: 1.5;">
+                    Recetas artesanales horneadas con amor y los mejores ingredientes, directo hasta la puerta de tu casa.
+                </p>
+                <div class="d-flex gap-2">
+                    <span class="badge rounded-pill bg-white bg-opacity-25 fw-normal px-3 py-2">🥐 Receta casera</span>
+                    <span class="badge rounded-pill bg-white bg-opacity-25 fw-normal px-3 py-2">🛵 Envío rápido</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Formularios -->
+        <div class="auth-form-side">
+            
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <a href="/" class="text-decoration-none text-muted small fw-semibold">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Volver a la tienda
+                    </a>
+                </div>
+
+                <ul class="nav nav-pills nav-justified mb-3" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#tab-login" type="button" role="tab">Iniciar Sesión</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="pill" data-bs-target="#tab-register" type="button" role="tab">Crear Cuenta</button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tab-content" id="authTabsContent">
+
+                <!-- Pestaña Login -->
+                <div class="tab-pane fade show active" id="tab-login" role="tabpanel">
+                    <div class="my-auto">
+                        <div class="mb-4">
+                            <h4 class="fw-bold text-dark mb-1">¡Hola de nuevo!</h4>
+                            <p class="text-muted small mb-0">Ingresa tus credenciales para gestionar tus pedidos.</p>
+                        </div>
+                        
+                        <form id="form-login" action="/api/login" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Correo electrónico</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
+                                    <input type="email" name="correo" id="login_correo" class="form-control" placeholder="ejemplo@correo.com" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Contraseña</label>
+                                <div class="input-group custom-input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                    <input type="password" name="password" id="login_password" class="form-control" placeholder="••••••••" required>
+                                    <span class="input-group-text btn-toggle-password px-3" data-target="login_password" style="cursor: pointer;">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4 small">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label text-muted" for="rememberMe">Recordarme</label>
+                                </div>
+                                <a href="#" class="link-marca">¿Olvidaste tu contraseña?</a>
+                            </div>
+
+                            <button type="submit" class="btn btn-cafe w-100">
+                                Iniciar Sesión <i class="fa-solid fa-arrow-right ms-2"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="text-center pt-2 border-top">
+                        <p class="small text-muted mb-0">
+                            ¿Aún no tienes cuenta? <a href="#" class="link-marca" onclick="document.getElementById('register-tab').click();">Regístrate gratis</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pestaña Registro -->
+                <div class="tab-pane fade" id="tab-register" role="tabpanel">
+                    <div class="my-auto">
+                        <div class="mb-2">
+                            <h4 class="fw-bold text-dark mb-0">Únete a la familia</h4>
+                            <p class="text-muted small mb-0">Crea tu cuenta en segundos para ordenar.</p>
+                        </div>
+                        
+                        <form id="form-register" action="/api/registro" method="POST">
+                            <div class="input-group custom-input-group mb-2">
+                                <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
+                                <input type="text" name="nombre" id="reg_nombre" class="form-control py-2" placeholder="Nombre completo" required>
+                            </div>
+
+                            <div class="input-group custom-input-group mb-2">
+                                <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
+                                <input type="email" name="correo" id="reg_correo" class="form-control py-2" placeholder="Correo electrónico" required>
+                            </div>
+
+                            <div class="input-group custom-input-group mb-2">
+                                <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                                <input type="tel" name="telefono" id="reg_telefono" class="form-control py-2" placeholder="Teléfono (ej. 7000-0000)" required>
+                            </div>
+
+                            <!-- Contraseña con ID unívoco -->
+                            <div class="input-group custom-input-group mb-2">
+                                <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" name="password" id="reg_password" class="form-control py-2" placeholder="Contraseña (mín. 8 caracteres)" required>
+                                <span class="input-group-text btn-toggle-password px-3" data-target="reg_password" style="cursor: pointer;">
+                                    <i class="fa-regular fa-eye"></i>
+                                </span>
+                            </div>
+
+                            <!-- Confirmar Contraseña con ID unívoco -->
+                            <div class="input-group custom-input-group mb-3">
+                                <span class="input-group-text"><i class="fa-solid fa-shield-halved"></i></span>
+                                <input type="password" name="confirm_password" id="reg_confirm_password" class="form-control py-2" placeholder="Confirmar contraseña" required>
+                                <span class="input-group-text btn-toggle-password px-3" data-target="reg_confirm_password" style="cursor: pointer;">
+                                    <i class="fa-regular fa-eye"></i>
+                                </span>
+                            </div>
+
+                            <button type="submit" class="btn btn-cafe w-100">
+                                Crear mi cuenta <i class="fa-solid fa-user-plus ms-2"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="text-center pt-2 border-top">
+                        <p class="small text-muted mb-0">
+                            ¿Ya eres cliente? <a href="#" class="link-marca" onclick="document.getElementById('login-tab').click();">Inicia sesión aquí</a>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
